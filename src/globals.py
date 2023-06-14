@@ -1,4 +1,5 @@
 import os
+from typing import List
 from dotenv import load_dotenv
 import supervisely as sly
 
@@ -21,7 +22,7 @@ if project_id:
     all_projects = {project_id: api.project.get_info_by_id(project_id)}
 else:
     all_projects = {
-        project.id: project for project in api.project.get_list(workspace_id)
+        project.id: project for project in api.project.get_list(workspace_id) if project.type == str(sly.ProjectType.IMAGES)
     }
 
 if dataset_id:
@@ -43,14 +44,14 @@ ds_img_ids = {}
 ann_infos = {}
 
 
-def get_ds_ann_infos(dataset_id) -> list[sly.api.annotation_api.AnnotationInfo]:
+def get_ds_ann_infos(dataset_id) -> List[sly.api.annotation_api.AnnotationInfo]:
     global ann_infos
     if dataset_id not in ann_infos:
         ann_infos[dataset_id] = api.annotation.get_list(dataset_id)
     return ann_infos[dataset_id]
 
 
-def get_ds_img_infos(dataset_id) -> list[sly.ImageInfo]:
+def get_ds_img_infos(dataset_id) -> List[sly.ImageInfo]:
     global ds_img_ids
     global all_img_infos
     if dataset_id not in ds_img_ids:
