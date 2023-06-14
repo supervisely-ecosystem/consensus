@@ -1,9 +1,8 @@
-import json
 import traceback
+from typing import Dict, List, Tuple
 import numpy as np
 
 import supervisely as sly
-
 from supervisely.annotation.annotation import Annotation
 from supervisely.annotation.label import Label
 from supervisely.annotation.obj_class import ObjClass
@@ -26,7 +25,6 @@ from supervisely.metric.iou_metric import IOU, INTERSECTION, UNION
 from supervisely.metric.matching import get_geometries_iou, match_indices_by_score
 from supervisely.project.project_meta import ProjectMeta
 
-_ONE_DAY_IN_SECONDS = 60 * 60 * 24
 
 PIXEL_ACCURACY = "pixel-accuracy"
 ERROR_PIXELS = "error-pixels"
@@ -80,62 +78,86 @@ _TAG_METRIC_NAMES = {
     TOTAL_PREDICTIONS: TAGS_TOTAL_PRED,
 }
 
-
-def get_iou_threshold(request):
-    if request.iou_threshold != None:
-        return request.iou_threshold
-    return DEFAULT_IOU_THRESHOLD
+DEFAULT_IOU_THRESHOLD = 0.8
 
 
-def get_name(x):
-    return x.name
-
-
-class TutorialBackendException(Exception):
+class MetricsException(Exception):
     def __init__(self, message):
         super().__init__()
         self.message = message
 
 
-def _load_metas(api, project_gt_id, project_pred_id, class_matches):
-    meta_gt = sly.ProjectMeta.from_json(api.project.get_meta(project_gt_id))
-    meta_pred = sly.ProjectMeta.from_json(api.project.get_meta(project_pred_id))
-    for class_match in class_matches:
-        if not meta_gt.obj_classes.has_key(class_match.class_gt):
-            raise TutorialBackendException(
-                message=f"Requested object class {class_match.class_gt!r} is missing "
-                f"from the ground truth project."
-            )
-        if not meta_pred.obj_classes.has_key(class_match.class_pred):
-            raise TutorialBackendException(
-                message=f"Requested object class {class_match.class_pred!r} is missing "
-                f"from the evaluated project."
-            )
-    return meta_gt, meta_pred
+class ClassMatch:
+    def __init__(self, class_gt, class_pred):
+        self.class_gt = class_gt
+        self.class_pred = class_pred
 
 
-def _load_image_infos(ds_info_gt, ds_info_pred, api):
-    image_infos_gt = sorted(api.image.get_list(ds_info_gt.id), key=get_name)
-    image_infos_pred = sorted(api.image.get_list(ds_info_pred.id), key=get_name)
-    if len(image_infos_gt) != len(image_infos_pred):
-        raise TutorialBackendException(
-            message=f"Dataset {ds_info_gt.name!r} has different number of images in ground truth "
-            f"and evaluation projects: {len(image_infos_gt)} vs {len(image_infos_pred)}."
-        )
-    for img_info_gt, img_info_pred in zip(image_infos_gt, image_infos_pred):
-        if img_info_gt.hash != img_info_pred.hash:
-            raise TutorialBackendException(
-                message=f"Different image hashes found in ground truth and evaluation projects in "
-                f"dataset {ds_info_gt.name!r}. {img_info_gt.name!r} with hash {img_info_gt.hash!r} "
-                f"vs {img_info_pred.name!r} with hash {img_info_pred.hash!r}."
-            )
-    return image_infos_gt, image_infos_pred
+class ComputeMetricsReq:
+    def __init__(
+        self,
+        united_meta: ProjectMeta,
+        img_infos_gt: List[sly.ImageInfo],
+        img_infos_pred: List[sly.ImageInfo],
+        ann_infos_gt: List[sly.api.annotation_api.AnnotationInfo],
+        ann_infos_pred: List[sly.api.annotation_api.AnnotationInfo],
+        class_matches: List[ClassMatch],
+        tags_whitelist,
+        obj_tags_whitelist,
+        iou_threshold,
+    ):
+        self.united_meta = united_meta
+        self.img_infos_gt = img_infos_gt
+        self.img_infos_pred = img_infos_pred
+        self.ann_infos_gt = ann_infos_gt
+        self.ann_infos_pred = ann_infos_pred
+        self.class_matches = class_matches
+        self.tags_whitelist = tags_whitelist
+        self.obj_tags_whitelist = obj_tags_whitelist
+        self.iou_threshold = iou_threshold
 
 
-def _load_annotation_jsons_batch(ds_id, image_infos, idx_batch, api):
-    image_ids = [image_infos[i].id for i in idx_batch]
-    ann_infos = api.annotation.download_batch(ds_id, image_ids)
-    return [ann_info.annotation for ann_info in ann_infos]
+class ComputeMetricsResp:
+    def __init__(self):
+        self.image_metrics = []
+        self.error_message = None
+
+    def add(self, metric_value):
+        self.image_metrics.append(metric_value)
+        return self.image_metrics[-1]
+
+    def to_json(self):
+        if self.error_message is not None:
+            return {"error": self.error_message}
+        return [image_metric.to_json() for image_metric in self.image_metrics]
+
+
+class MetricValue:
+    def __init__(self):
+        self.value = 0
+        self.metric_name = ""
+        self.class_gt = ""
+        self.image_gt_id = 0
+        self.image_pred_id = 0
+        self.image_dest_id = 0
+        self.tag_name = ""
+
+    def to_json(self):
+        return {
+            "value": self.value,
+            "metric_name": self.metric_name,
+            "class_gt": self.class_gt,
+            "image_gt_id": self.image_gt_id,
+            "image_pred_id": self.image_pred_id,
+            "image_dest_id": self.image_dest_id,
+            "tag_name": self.tag_name,
+        }
+
+
+def get_iou_threshold(request: ComputeMetricsReq):
+    if request.iou_threshold != None:
+        return request.iou_threshold
+    return DEFAULT_IOU_THRESHOLD
 
 
 def _fill_metric_value(
@@ -288,13 +310,6 @@ def safe_get_geometries_iou(g1, g2):
         return get_geometries_iou(g1, g2)
 
 
-def _maybe_label(obj_class, data):
-    if np.any(data):
-        return [Label(obj_class=obj_class, geometry=Bitmap(data=data))]
-    else:
-        return []
-
-
 def _make_counters():
     return {TRUE_POSITIVE: 0, FALSE_POSITIVE: 0, FALSE_NEGATIVE: 0}
 
@@ -303,110 +318,36 @@ def _make_pixel_counters():
     return {INTERSECTION: 0, UNION: 0, ERROR_PIXELS: 0, TOTAL_PIXELS: 0}
 
 
-class ClassMatch:
-    def __init__(self, class_gt, class_pred):
-        self.class_gt = class_gt
-        self.class_pred = class_pred
-
-
-class ComputeMetricsReq:
-    def __init__(
-        self,
-        server_address,
-        api_token,
-        project_gt_id,
-        dataset_gt_id,
-        project_pred_id,
-        dataset_pred_id,
-        class_matches,
-        tags_whitelist,
-        obj_tags_whitelist,
-        iou_threshold,
-    ):
-        self.server_address = server_address
-        self.api_token = api_token
-        self.project_gt_id = project_gt_id
-        self.dataset_gt_id = dataset_gt_id
-        self.project_pred_id = project_pred_id
-        self.dataset_pred_id = dataset_pred_id
-        self.class_matches = class_matches
-        self.tags_whitelist = tags_whitelist
-        self.obj_tags_whitelist = obj_tags_whitelist
-        self.iou_threshold = iou_threshold
-
-
-class ComputeMetricsResp:
-    def __init__(self):
-        self.image_metrics = []
-
-    def add(self, metric_value):
-        self.image_metrics.append(metric_value)
-        return self.image_metrics[-1]
-
-    def to_json(self):
-        return [image_metric.to_json() for image_metric in self.image_metrics]
-
-
-class MetricValue:
-    def __init__(self):
-        self.value = 0
-        self.metric_name = ""
-        self.class_gt = ""
-        self.image_gt_id = 0
-        self.image_pred_id = 0
-        self.image_dest_id = 0
-        self.tag_name = ""
-
-    def to_json(self):
-        return {
-            "value": self.value,
-            "metric_name": self.metric_name,
-            "class_gt": self.class_gt,
-            "image_gt_id": self.image_gt_id,
-            "image_pred_id": self.image_pred_id,
-            "image_dest_id": self.image_dest_id,
-            "tag_name": self.tag_name,
-        }
-
-
-def ComputeMetrics(request: ComputeMetricsReq):
-    # Initialize API.
+def ComputeMetrics(
+    request: ComputeMetricsReq,
+) -> Tuple[ComputeMetricsResp, List[sly.Bitmap]]:
     response = ComputeMetricsResp()
-    api = sly.Api(server_address=request.server_address, token=request.api_token)
-
     iou_threshold = get_iou_threshold(request)
     tags_whitelist = set(request.tags_whitelist)
     obj_tags_whitelist = set(request.obj_tags_whitelist)
+    img_infos_gt = request.img_infos_gt
+    img_infos_pred = request.img_infos_pred
+    ann_infos_gt = request.ann_infos_gt
+    ann_infos_pred = request.ann_infos_pred
+    difference_geometries = []
 
     try:
-        # Open both projects.
-        # Make sure metas have the requested classes from the mapping.
-        meta_gt, meta_pred = _load_metas(
-            api,
-            request.project_gt_id,
-            request.project_pred_id,
-            request.class_matches,
-        )
+        if len(img_infos_gt) != len(img_infos_pred):
+            raise MetricsException(
+                message="Ground truth images infos and Prediction images infos have different lengths."
+            )
 
-        # Make sure dataset names and image hashes match.
-        ds_info_gt = api.dataset.get_info_by_id(request.dataset_gt_id)
-        ds_info_pred = api.dataset.get_info_by_id(request.dataset_pred_id)
-        # ds_info_dest = api.dataset.get_info_by_id(request.dataset_dest_id)
-        image_infos_gt, image_infos_pred = _load_image_infos(
-            ds_info_gt, ds_info_pred, api
-        )
-        # _, image_infos_dest = _load_image_infos(ds_info_gt, ds_info_dest, api)
+        if len(ann_infos_gt) != len(ann_infos_pred):
+            raise MetricsException(
+                message="Ground truth annotations and Prediction annotations have different lengths."
+            )
+
+        meta = request.united_meta
 
         class_mapping = {
             class_match.class_gt: class_match.class_pred
             for class_match in request.class_matches
         }
-
-        overall_error_class = ObjClass(
-            name=OVERALL_ERROR_CLASS, geometry_type=Bitmap, color=[255, 0, 0]
-        )
-        # dest_meta = ProjectMeta(obj_classes=ObjClassCollection([overall_error_class]))
-        # api.project.update_meta(request.project_dest_id, dest_meta.to_json())
 
         class_matching_counters = {
             class_gt: _make_counters() for class_gt in class_mapping
@@ -422,41 +363,27 @@ def ComputeMetrics(request: ComputeMetricsReq):
         total_pixels = 0
 
         # In batches, download annotations for the ground truth and predictions.
-        for idx_batch in sly.batched(range(len(image_infos_gt))):
-            image_infos_gt_batch = [image_infos_gt[idx] for idx in idx_batch]
-            image_infos_pred_batch = [image_infos_pred[idx] for idx in idx_batch]
-            # image_infos_dest_batch = [image_infos_dest[idx] for idx in idx_batch]
-
-            ann_jsons_gt = _load_annotation_jsons_batch(
-                ds_info_gt.id, image_infos_gt, idx_batch, api
-            )
-            ann_jsons_pred = _load_annotation_jsons_batch(
-                ds_info_pred.id, image_infos_pred, idx_batch, api
-            )
-            if len(ann_jsons_gt) != len(ann_jsons_pred):
-                raise TutorialBackendException(
-                    message=f"Downloaded annotation batches have different lengths in ground truth and "
-                    f"evaluation projects in dataset {ds_info_gt.name!r}."
-                )
-
-            # dest_anns_batch = []
+        for idx_batch in sly.batched(range(len(img_infos_gt))):
+            img_infos_gt_batch = [img_infos_gt[i] for i in idx_batch]
+            img_infos_pred_batch = [img_infos_pred[i] for i in idx_batch]
+            ann_jsons_gt = [ann_infos_gt[i].annotation for i in idx_batch]
+            ann_jsons_pred = [ann_infos_pred[i].annotation for i in idx_batch]
+            difference_geometries_batch = []
 
             # Pass the annotations in pairs through the metric computers.
             for (
                 image_info_gt,
                 image_info_pred,
-                # image_info_dest,
                 ann_json_gt,
                 ann_json_pred,
             ) in zip(
-                image_infos_gt_batch,
-                image_infos_pred_batch,
-                # image_infos_dest_batch,
+                img_infos_gt_batch,
+                img_infos_pred_batch,
                 ann_jsons_gt,
                 ann_jsons_pred,
             ):
-                ann_gt = sly.Annotation.from_json(ann_json_gt, meta_gt)
-                ann_pred = sly.Annotation.from_json(ann_json_pred, meta_pred)
+                ann_gt = sly.Annotation.from_json(ann_json_gt, meta)
+                ann_pred = sly.Annotation.from_json(ann_json_pred, meta)
 
                 image_class_counters = {
                     class_gt: _make_counters() for class_gt in class_mapping
@@ -708,18 +635,12 @@ def ComputeMetrics(request: ComputeMetricsReq):
                         # image_dest_id=image_info_dest.id,
                     )
 
-                # dest_anns_batch.append(
-                #     Annotation(
-                #         img_size=ann_gt.img_size,
-                #         labels=_maybe_label(overall_error_class, image_canvas_errors),
-                #     )
-                # )
+                if np.any(image_canvas_errors):
+                    difference_geometries_batch.append(Bitmap(image_canvas_errors))
+                else:
+                    difference_geometries_batch.append(None)
 
-            # Upload annotation batch with difference renders.
-            # api.annotation.upload_anns(
-            #     img_ids=[image_infos_dest[idx].id for idx in idx_batch],
-            #     anns=dest_anns_batch,
-            # )
+            difference_geometries.extend(difference_geometries_batch)
 
         overall_score_components = {}
 
@@ -773,46 +694,46 @@ def ComputeMetrics(request: ComputeMetricsReq):
                 response.add(MetricValue()), OVERALL_SCORE, overall_score
             )
 
-    except TutorialBackendException as exc:
+    except MetricsException as exc:
         # Reset the response to make sure there is no incomplete data there
         response = ComputeMetricsResp()
         response.error_message = exc.message
+        difference_geometries_batch = []
     except Exception as exc:
         response = ComputeMetricsResp()
         response.error_message = "Unexpected exception: {}".format(
             traceback.format_exc()
         )
+        difference_geometries_batch = []
 
-    return response
+    return response, difference_geometries_batch
 
 
 def calculate_exam_report(
-    server_address,
-    api_token,
-    project_gt_id,
-    dataset_gt_id,
-    project_pred_id,
-    dataset_pred_id,
+    united_meta,
+    img_infos_gt,
+    img_infos_pred,
+    ann_infos_gt,
+    ann_infos_pred,
     class_matches,
     tags_whitelist,
     obj_tags_whitelist,
     iou_threshold,
-):
+) -> Tuple[List, List[Bitmap]]:
     class_matches = [
         ClassMatch(class_gt=cm["class_gt"], class_pred=cm["class_pred"])
         for cm in class_matches
     ]
     request = ComputeMetricsReq(
-        server_address=server_address,
-        api_token=api_token,
-        project_gt_id=project_gt_id,
-        dataset_gt_id=dataset_gt_id,
-        project_pred_id=project_pred_id,
-        dataset_pred_id=dataset_pred_id,
+        united_meta=united_meta,
+        img_infos_gt=img_infos_gt,
+        img_infos_pred=img_infos_pred,
+        ann_infos_gt=ann_infos_gt,
+        ann_infos_pred=ann_infos_pred,
         class_matches=class_matches,
         tags_whitelist=tags_whitelist,
         obj_tags_whitelist=obj_tags_whitelist,
         iou_threshold=iou_threshold,
     )
-    result = ComputeMetrics(request)
-    return result.to_json()
+    result, diff_bitmaps = ComputeMetrics(request)
+    return result.to_json(), diff_bitmaps
