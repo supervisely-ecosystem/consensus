@@ -97,16 +97,19 @@ def show_images(datapoint):
 
     gt_img = gt_images[img_idx]
     gt_img: sly.ImageInfo
-    labels = (
-        [
-            sly.Label(
-                differences[img_idx],
-                sly.ObjClass("difference", sly.Bitmap, (255, 0, 0)),
-            )
-        ]
-        if differences[img_idx] is not None
-        else []
-    )
+    try:
+        labels = (
+            [
+                sly.Label(
+                    differences[img_idx],
+                    sly.ObjClass("difference", sly.Bitmap, (255, 0, 0)),
+                )
+            ]
+            if differences[img_idx] is not None
+            else []
+        )
+    except:
+        labels = []
     diff_ann = sly.Annotation(
         img_size=(gt_img.height, gt_img.width),
         labels=labels,
