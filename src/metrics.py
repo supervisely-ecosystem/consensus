@@ -698,15 +698,15 @@ def ComputeMetrics(
         # Reset the response to make sure there is no incomplete data there
         response = ComputeMetricsResp()
         response.error_message = exc.message
-        difference_geometries_batch = []
+        difference_geometries = []
     except Exception as exc:
         response = ComputeMetricsResp()
         response.error_message = "Unexpected exception: {}".format(
             traceback.format_exc()
         )
-        difference_geometries_batch = []
+        difference_geometries = []
 
-    return response, difference_geometries_batch
+    return response, difference_geometries
 
 
 def calculate_exam_report(
