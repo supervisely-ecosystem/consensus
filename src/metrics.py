@@ -636,7 +636,21 @@ def ComputeMetrics(
                         # image_dest_id=image_info_dest.id,
                     )
 
-                if np.any(image_canvas_errors):
+                canvas_diff = np.zeros(ann_gt.img_size, dtype=np.bool)
+                for class_gt, class_pred in class_mapping.items():
+                    canvas_gt = np.zeros(ann_gt.img_size, dtype=np.bool)
+                    canvas_pred = np.zeros(ann_gt.img_size, dtype=np.bool)
+                    gt_class_labels = [ann_gt.labels[i] for i in class_to_indices_gt.get(class_gt, [])]
+                    pred_class_labels = [ann_pred.labels[i] for i in class_to_indices_pred.get(class_pred, [])]
+                    for idx, label in enumerate(gt_class_labels):
+                        label.geometry.draw(canvas_gt, color=True)
+                    for idx, label in enumerate(pred_class_labels):
+                        label.geometry.draw(canvas_pred, color=True)
+                    class_canvas_diff = canvas_gt != canvas_pred
+                    canvas_diff |= class_canvas_diff
+
+                if np.any(canvas_diff):
+                    # difference_geometries_batch.append(Bitmap(canvas_diff))
                     difference_geometries_batch.append(Bitmap(image_canvas_errors))
                 else:
                     difference_geometries_batch.append(None)

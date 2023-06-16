@@ -15,6 +15,7 @@ from supervisely.app.widgets import (
     DatasetThumbnail,
     NotificationBox,
     Progress,
+    InputNumber
 )
 from supervisely.api.annotation_api import AnnotationInfo
 from supervisely.imaging.color import rgb2hex
@@ -195,6 +196,7 @@ add_to_compare_btn.disable()
 compare_table = RadioTable(columns=COMPARE_TABLE_COLUMNS, rows=[])
 pop_row_btn = Button("remove", button_size="small")
 compare_btn = Button("calculate consensus")
+threshold_input = InputNumber(value=0.5, min=0, max=1, controls=False)
 report_pairs_progress = Progress("Calculating consensus report...", show_percents=True, hide_on_finish=False)
 report_pairs_progress.hide()
 repot_preparation_progress = Progress("Preparing data for the report...", show_percents=True, hide_on_finish=False)
@@ -633,6 +635,7 @@ def compare_btn_clicked():
 
     report_layout.hide()
     result_table.loading = True
+    threshold = threshold_input.get_value()
     rows_pairs = [
         (rows[i], rows[j]) for i in range(len(rows)) for j in range(i+1, len(rows))
     ]
@@ -681,7 +684,7 @@ def compare_btn_clicked():
                     class_matches=class_matches,
                     tags_whitelist=tags_whitelist,
                     obj_tags_whitelist=obj_tags_whitelist,
-                    iou_threshold=0.5,
+                    iou_threshold=threshold,
                     progress=calculation_progress,
                 )
                 pairs_comparisons_results[
@@ -716,7 +719,7 @@ def compare_btn_clicked():
                     class_matches=class_matches,
                     tags_whitelist=tags_whitelist,
                     obj_tags_whitelist=obj_tags_whitelist,
-                    iou_threshold=0.5,
+                    iou_threshold=threshold,
                     progress=calculation_progress,
                 )
                 pairs_comparisons_results[
@@ -876,7 +879,7 @@ layout = Container(
             title="3️⃣ Compare Results",
             description="Click on 'CALCULATE CONSENSUS' button to see comparison matrix. Value in a table cell is a consensus score between two users",
             content=Container(widgets=[report_pairs_progress, repot_preparation_progress, report_calculation_progress, result_table]),
-            content_top_right=compare_btn,
+            content_top_right=Flexbox(widgets=[threshold_input, compare_btn]),
         ),
         consensus_report_notification,
         consensus_report_error_notification,
