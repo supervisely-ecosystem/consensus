@@ -15,7 +15,8 @@ from supervisely.app.widgets import (
     DatasetThumbnail,
     NotificationBox,
     Progress,
-    InputNumber
+    InputNumber,
+    Empty,
 )
 from supervisely.api.annotation_api import AnnotationInfo
 from supervisely.imaging.color import rgb2hex
@@ -879,7 +880,7 @@ layout = Container(
             title="3️⃣ Compare Results",
             description="Click on 'CALCULATE CONSENSUS' button to see comparison matrix. Value in a table cell is a consensus score between two users",
             content=Container(widgets=[report_pairs_progress, repot_preparation_progress, report_calculation_progress, result_table]),
-            content_top_right=Flexbox(widgets=[threshold_input, compare_btn]),
+            content_top_right=Flexbox(widgets=[Field(title="iou threshold", description="Is used to match objects", content=Empty()), threshold_input, compare_btn]),
         ),
         consensus_report_notification,
         consensus_report_error_notification,
