@@ -72,6 +72,29 @@ report_per_image_table_columns = [
 report_per_image_table = Table(columns=report_per_image_table_columns)
 
 
+def report_to_dict(report):
+    d = {}
+    for metric in report:
+        if metric["metric_name"] not in d:
+            d[metric["metric_name"]] = {}
+        if metric["image_gt_id"] not in d[metric["metric_name"]]:
+            d[metric["metric_name"]][metric["image_gt_id"]] = {
+                (metric["class_gt"], metric["tag_name"]): metric["value"],
+                "image_dest_id": metric["image_dest_id"]
+            }
+    return d
+
+
+# metrics = {
+#     metic_name: {
+#         image_gt_id: {
+#             (class_gt, tag_name): value,
+#             "image_dest_id": image_dest_id
+#         }
+#     }
+# }
+
+
 @report_per_image_table.click
 def show_images(datapoint):
     global report_per_image_images
@@ -98,16 +121,7 @@ def show_images(datapoint):
     gt_img = gt_images[img_idx]
     gt_img: sly.ImageInfo
     try:
-        labels = (
-            [
-                sly.Label(
-                    differences[img_idx],
-                    sly.ObjClass("difference", sly.Bitmap, (255, 0, 0)),
-                )
-            ]
-            if differences[img_idx] is not None
-            else []
-        )
+        labels = [sly.Label(differences[img_idx], sly.ObjClass("difference", sly.Bitmap, (255, 0, 0)))]
     except:
         labels = []
     diff_ann = sly.Annotation(
@@ -156,184 +170,120 @@ results = Container(
 layout = results
 
 
-def get_overall_score(result):
-    for data in result:
-        if data["metric_name"] == "overall-score":
-            if (
-                data["class_gt"] == ""
-                and data["image_gt_id"] == 0
-                and data["tag_name"] == ""
-            ):
-                return data["value"]
-    return 0
+def get_overall_score(report):
+    try:
+        return report["overall-score"][0][("","")]
+    except KeyError:
+        return 0
 
 
-def get_obj_count_per_class_row(result, class_name):
-    num_objects_gt = 0
-    num_objects_pred = 0
-    matches_recall_percent = 1
-    matches_precision_percent = 1
-    matches_f_measure = 1
-    for data in result:
-        if data["image_gt_id"] == 0:
-            if (
-                data["metric_name"] == "num-objects-gt"
-                and data["class_gt"] == class_name
-            ):
-                num_objects_gt = data["value"]
-            if (
-                data["metric_name"] == "num-objects-pred"
-                and data["class_gt"] == class_name
-            ):
-                num_objects_pred = data["value"]
-            if (
-                data["metric_name"] == "matches-recall"
-                and data["class_gt"] == class_name
-            ):
-                matches_recall_percent = data["value"]
-            if (
-                data["metric_name"] == "matches-precision"
-                and data["class_gt"] == class_name
-            ):
-                matches_precision_percent = data["value"]
-            if data["metric_name"] == "matches-f1" and data["class_gt"] == class_name:
-                matches_f_measure = data["value"]
+def get_obj_count_per_class_row(report, class_name):
+    metrics = {
+        "num-objects-gt": 0,
+        "num-objects-pred": 0,
+        "matches-recall": 1,
+        "matches-precision": 1,
+        "matches-f1": 1,
+    }
+    for metric_name in metrics.keys():
+        try:
+            metrics[metric_name] = report[metric_name][0][(class_name, "")]
+        except KeyError:
+            pass
     return [
         class_name,
-        str(num_objects_gt),
-        str(num_objects_pred),
-        f"{int(matches_recall_percent*num_objects_gt)} of {num_objects_gt} ({round(matches_recall_percent*100, 2)}%)",
-        f"{int(matches_precision_percent*num_objects_pred)} of {num_objects_pred} ({round(matches_precision_percent*100, 2)}%)",
-        f"{round(matches_f_measure*100, 2)}%",
+        str(metrics["num-objects-gt"]),
+        str(metrics["num-objects-pred"]),
+        f'{int(metrics["matches-recall"]*metrics["num-objects-gt"])} of {metrics["num-objects-gt"]} ({round(metrics["matches-recall"]*100, 2)}%)',
+        f'{int(metrics["matches-precision"]*metrics["num-objects-pred"])} of {metrics["num-objects-pred"]} ({round(metrics["matches-precision"]*100, 2)}%)',
+        f'{round(metrics["matches-f1"]*100, 2)}%',
     ]
 
 
-def get_average_f_measure_per_class(result):
-    avg_f1 = 1
-    f1_measures = []
-    for data in result:
-        if data["image_gt_id"] == 0:
-            if data["metric_name"] == "matches-f1" and data["class_gt"] != "":
-                f1_measures.append(data["value"])
-    if len(f1_measures) > 0:
-        avg_f1 = sum(f1_measures) / len(f1_measures)
-    return avg_f1
+def get_average_f_measure_per_class(report):
+    try:
+        return report["matches-f1"][0][("","")]
+    except KeyError:
+        return 1
 
 
-def get_geometry_quality_row(result, class_name):
-    pixel_accuracy = 1
-    iou = 1
-    for data in result:
-        if data["image_gt_id"] == 0:
-            if (
-                data["metric_name"] == "pixel-accuracy"
-                and data["class_gt"] == class_name
-            ):
-                pixel_accuracy = data["value"]
-            if data["metric_name"] == "iou" and data["class_gt"] == class_name:
-                iou = data["value"]
+def get_geometry_quality_row(report, class_name):
+    metrics = {
+        "pixel-accuracy": 1,
+        "iou": 1,
+    }
+    for metric_name in metrics.keys():
+        try:
+            metrics[metric_name] = report[metric_name][0][(class_name, "")]
+        except KeyError:
+            pass
 
-    return [class_name, f"{round(pixel_accuracy*100, 2)}%", f"{round(iou*100, 2)}%"]
+    return [class_name, f'{round(metrics["pixel-accuracy"]*100, 2)}%', f'{round(metrics["iou"]*100, 2)}%']
 
 
-def get_average_iou(result):
-    avg_iou = 1
-    iou = []
-    for data in result:
-        if data["image_gt_id"] == 0:
-            if data["metric_name"] == "iou" and data["class_gt"] != "":
-                iou.append(data["value"])
-    if len(iou) > 0:
-        avg_iou = sum(iou) / len(iou)
-    return avg_iou
+def get_average_iou(report):
+    try:
+        return report["iou"][0][("","")]
+    except KeyError:
+        return 1
 
 
-def get_tags_stat_table_row(result, tag_name):
-    total_gt = 0
-    total_pred = 0
-    precision = 1
-    recall = 1
-    f1 = 1
-    for data in result:
-        if data["image_gt_id"] == 0:
-            if data["metric_name"] == "tags-total-gt" and data["tag_name"] == tag_name:
-                total_gt = data["value"]
-            if (
-                data["metric_name"] == "tags-total-pred"
-                and data["tag_name"] == tag_name
-            ):
-                total_pred = data["value"]
-            if data["metric_name"] == "tags-precision" and data["tag_name"] == tag_name:
-                precision = data["value"]
-            if data["metric_name"] == "tags-recall" and data["tag_name"] == tag_name:
-                recall = data["value"]
-            if data["metric_name"] == "tags-f1" and data["tag_name"] == tag_name:
-                f1 = data["value"]
-
+def get_tags_stat_table_row(report, tag_name):
+    metrics = {
+        "tags-total-gt": 0,
+        "tags-total-pred": 0,
+        "tags-precision": 1,
+        "tags-recall": 1,
+        "tags-f1": 1,
+    }
+    for metric_name in metrics.keys():
+        try:
+            metrics[metric_name] = report[metric_name][0][("", tag_name)]
+        except KeyError:
+            pass
     return [
         tag_name,
-        total_gt,
-        total_pred,
-        f"{int(precision*total_pred)} of {total_pred} ({round(precision*100, 2)}%)",
-        f"{int(recall*total_gt)} of {total_gt} ({round(recall*100, 2)}%)",
-        f"{round(f1*100, 2)}%",
+        metrics["tags-total-gt"],
+        metrics["tags-total-pred"],
+        f'{int(metrics["tags-precision"]*metrics["tags-total-pred"])} of {metrics["tags-total-pred"]} ({round(metrics["tags-precision"]*100, 2)}%)',
+        f'{int(metrics["tags-recall"]*metrics["tags-total-gt"])} of {metrics["tags-total-gt"]} ({round(metrics["tags-recall"]*100, 2)}%)',
+        f'{round(metrics["tags-f1"]*100, 2)}%',
     ]
 
 
-def get_average_f_measure_per_tags(result):
-    avg_f1 = 1
-    f1_measures = []
-    for data in result:
-        if data["image_gt_id"] == 0:
-            if data["metric_name"] == "tags-f1" and data["tag_name"] == "":
-                f1_measures.append(data["value"])
-    if len(f1_measures) > 0:
-        avg_f1 = sum(f1_measures) / len(f1_measures)
-    return avg_f1
+def get_average_f_measure_per_tags(report):
+    try:
+        return report["tags-f1"][0][("", "")]
+    except KeyError:
+        return 1
 
 
-def get_report_per_image_row(result, image_name, image_id):
-    objects_score = 1
-    objects_missing = None
-    obj_false_positive = None
-    tag_score = 1
-    tag_missing = None
-    tag_false_positive = None
-    geometry_score = 0
-    overall_score = 0
-    for data in result:
-        if (
-            data["image_gt_id"] == image_id
-            and data["class_gt"] == ""
-            and data["tag_name"] == ""
-        ):
-            if data["metric_name"] == "matches-f1":
-                objects_score = data["value"]
-            if data["metric_name"] == "matches-false-negative":
-                objects_missing = data["value"]
-            if data["metric_name"] == "matches-false-positive":
-                obj_false_positive = data["value"]
-            if data["metric_name"] == "tags-f1":
-                tag_score = data["value"]
-            if data["metric_name"] == "tags-false-negative":
-                tag_missing = data["value"]
-            if data["metric_name"] == "tags-false-positive":
-                tag_false_positive = data["value"]
-            if data["metric_name"] == "iou":
-                geometry_score = data["value"]
-            if data["metric_name"] == "overall-score":
-                overall_score = data["value"]
-
+def get_report_per_image_row(report, image_name, image_id):
+    metrics = {
+        "matches-f1": 1,
+        "matches-false-negative": 0,
+        "matches-false-positive": 0,
+        "tags-f1": 1,
+        "tags-false-negative": 0,
+        "tags-false-positive": 0,
+        "iou": 0,
+        "overall-score": 0,
+    }
+    for metric_name in metrics.keys():
+        try:
+            metrics[metric_name] = report[metric_name][image_id][("", "")]
+        except KeyError:
+            pass
     return [
         image_name,
-        f"{round(objects_score*100, 2)}%",
-        objects_missing,
-        obj_false_positive,
-        f"{round(tag_score*100, 2)}%",
-        tag_missing,
-        tag_false_positive,
-        f"{round(geometry_score*100, 2)}%",
-        f"{round(overall_score*100, 2)}%",
+        f'{round(metrics["matches-f1"]*100, 2)}%',
+        metrics["matches-false-negative"],
+        metrics["matches-false-positive"],
+        f'{round(metrics["tags-f1"]*100, 2)}%',
+        metrics["tags-false-negative"],
+        metrics["tags-false-positive"],
+        f'{round(metrics["iou"]*100, 2)}%',
+        f'{round(metrics["overall-score"]*100, 2)}%',
     ]
 
 
@@ -407,6 +357,8 @@ def render_report(
     differences = diffs
     left_name = first_name
     right_name = second_name
+
+    report = report_to_dict(report)
 
     # overall score
     def get_score_text(score):

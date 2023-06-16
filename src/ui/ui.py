@@ -14,6 +14,7 @@ from supervisely.app.widgets import (
     ProjectThumbnail,
     DatasetThumbnail,
     NotificationBox,
+    Progress,
 )
 from supervisely.api.annotation_api import AnnotationInfo
 from supervisely.imaging.color import rgb2hex
@@ -59,10 +60,10 @@ class ComparisonResult:
         self.first_images = first_images
         self.second_images = second_images
         self._first_annotations_path = self.save_anns_jsons(
-            row_to_str(pair[0]), first_annotations_jsons
+            ', '.join(str(p) for p in pair[0][2:]), first_annotations_jsons
         )
         self._second_annotations_path = self.save_anns_jsons(
-            row_to_str(pair[1]), second_annotations_jsons
+            ', '.join(str(p) for p in pair[1][2:]), second_annotations_jsons
         )
         self.tags = tags
         self.classes = classes
@@ -70,10 +71,14 @@ class ComparisonResult:
         self.second_classes = second_classes
         self._report_path = self.save_report(pair, report)
         self._differences_path = self.save_differences(pair, differences)
+        try:
+            self.error_message = report["error"]
+        except (KeyError, TypeError):
+            self.error_message = None
 
     def save_differences(self, pair, difference_geometries: List[sly.Bitmap]):
-        first = row_to_str(pair[0])
-        second = row_to_str(pair[1])
+        first = ', '.join(str(p) for p in pair[0][2:])
+        second = ', '.join(str(p) for p in pair[1][2:])
         path = f"/tmp/diffs_{first}{second}.json"
         with open(path, "w") as f:
             json.dump(
@@ -92,8 +97,8 @@ class ComparisonResult:
         return path
 
     def save_report(self, pair, report):
-        first = row_to_str(pair[0])
-        second = row_to_str(pair[1])
+        first = ', '.join(str(p) for p in pair[0][2:])
+        second = ', '.join(str(p) for p in pair[1][2:])
         path = f"/tmp/report_{first}{second}.json"
         with open(path, "w") as f:
             json.dump(report, f)
@@ -126,7 +131,7 @@ class ComparisonResult:
 
 
 def wrap_in_tag(text, color):
-    return f'<i class="zmdi zmdi-brush" style="padding-right: 3px;"></i><span style="padding-right: 6px; color: {rgb2hex(color)}">{text}</span>'
+    return f'<i class="zmdi zmdi-circle" style="margin-right: 3px; color: {rgb2hex(color)}"></i><span style="margin-right: 6px;">{text}</span>'
 
 
 class SelectedUser:
@@ -190,6 +195,12 @@ add_to_compare_btn.disable()
 compare_table = RadioTable(columns=COMPARE_TABLE_COLUMNS, rows=[])
 pop_row_btn = Button("remove", button_size="small")
 compare_btn = Button("calculate consensus")
+report_pairs_progress = Progress("Calculating consensus report...", show_percents=True, hide_on_finish=False)
+report_pairs_progress.hide()
+repot_preparation_progress = Progress("Preparing data for the report...", show_percents=True, hide_on_finish=False)
+repot_preparation_progress.hide()
+report_calculation_progress = Progress("Calculating consensus report for pair: ", show_percents=True, hide_on_finish=False)
+report_calculation_progress.hide()
 result_table = Table()
 consensus_report_text = Text(f"<h1>Consensus report</h1>", status="text")
 consensus_report_text.hide()
@@ -216,11 +227,19 @@ consensus_report_notification = NotificationBox(
     box_type="info",
 )
 consensus_report_notification.hide()
+consensus_report_error_notification = NotificationBox(
+    title="Error",
+    description="Error occured while calculating consensus report",
+    box_type="error",
+)
+consensus_report_error_notification.hide()
 result_table.hide()
 report_layout.hide()
 pairs_comparisons_results = {}
+name_to_row = {}
 
 
+@sly.timeit
 def get_annotators(datasets_ids: List[int]):
     annotators = set()
     for dataset_id in datasets_ids:
@@ -237,7 +256,7 @@ def get_annotators(datasets_ids: List[int]):
 
 def get_score(report: List[dict]):
     if "error" in report:
-        return -1
+        return "Error"
     for metric in report:
         if metric["metric_name"] == "overall-score":
             if (
@@ -250,21 +269,25 @@ def get_score(report: List[dict]):
 
 
 def row_to_str(row):
-    return f"{row[1]}, {row[3]}, {row[5]}"
+    return f"{row[0]}. {row[2]}, {row[4]}, {row[6]}"
 
 
-def get_result_table_data_json(first_rows, second_rows, pairs, pairs_scores):
-    first_rows_indexes = {tuple(row): idx for idx, row in enumerate(first_rows)}
-    second_rows_indexes = {tuple(row): idx for idx, row in enumerate(second_rows)}
+def get_result_table_data_json(first_rows, second_rows, pairs_scores):
+    first_rows_indexes = {row: idx for idx, row in enumerate(first_rows)}
+    second_rows_indexes = {row: idx for idx, row in enumerate(second_rows)}
     data = [
         [row_to_str(first_rows[i]), *["" for _ in range(len(second_rows))]]
         for i in range(len(first_rows))
     ]
-    for pair, score in zip(pairs, pairs_scores):
-        first_idx = first_rows_indexes[tuple(pair[0])]
-        second_idx = second_rows_indexes[tuple(pair[1])]
-        data[first_idx][second_idx + 1] = round(score * 100, 2)
-        # data[second_idx][first_idx+1] = round(score*100, 2)
+    for pair, score in pairs_scores.items():
+        first_idx = first_rows_indexes[pair[0]]
+        second_idx = second_rows_indexes[pair[1]]
+        if score != "Error":
+            data[first_idx][second_idx + 1] = round(score * 100, 2)
+            # data[second_idx][first_idx+1] = round(score*100, 2)
+        else:
+            data[first_idx][second_idx + 1] = "Error"
+
     return {"columns": ["", *[row_to_str(row) for row in first_rows]], "data": data}
 
 
@@ -390,9 +413,7 @@ def add_to_compare_btn_clicked():
     user_login = select_user_to_compare.get_value()
     users_list = [user_login]
     if user_login is None:
-        users_list = get_annotators(
-            [ds.id for ds in g.all_datasets.values() if ds.project_id == project_id]
-        )
+        users_list = [item.value for item in select_user_to_compare.get_items() if item.value is not None]
     if len(users_list) == 0:
         return
     for user_login in users_list:
@@ -438,199 +459,307 @@ def get_ann_infos(project_id, dataset_id):
         datasets_ids = [dataset_id]
     return [img for ds_id in datasets_ids for img in g.get_ds_ann_infos(ds_id)]
 
+@sly.timeit
+def count_common_images(rows_pairs, progress):
+    total = 0
+    for pair in rows_pairs:
+        first_project_id = pair[0][3]
+        second_project_id = pair[1][4]
+        first_dataset_id = pair[0][5]
+        second_dataset_id = pair[1][6]
+        first_img_infos = sorted(
+            get_img_infos(first_project_id, first_dataset_id), key=lambda x: x.name
+        )
+        second_img_names = set(img.name for img in get_img_infos(second_project_id, second_dataset_id))
+        for first_img in first_img_infos:
+            if first_img.name in second_img_names:
+                total += 2
+                progress.total = progress.total + 2
+    return total
+
+
+@sly.timeit
+def get_common_images(pair):
+    first_project_id = pair[0][3]
+    second_project_id = pair[1][3]
+    first_dataset_id = pair[0][5]
+    second_dataset_id = pair[1][5]
+    first_img_infos = sorted(
+        get_img_infos(first_project_id, first_dataset_id), key=lambda x: x.name
+    )
+    second_img_infos = sorted(
+        get_img_infos(second_project_id, second_dataset_id),
+        key=lambda x: x.name,
+    )
+    second_img_name_to_idx = {img.name: i for i, img in enumerate(second_img_infos)}
+    paired_infos = []
+    for first_img in first_img_infos:
+        if first_img.name in second_img_name_to_idx:
+            paired_infos.append(
+                (first_img, second_img_infos[second_img_name_to_idx[first_img.name]])
+            )
+    first_img_infos = [paired_info[0] for paired_info in paired_infos]
+    second_img_infos = [paired_info[1] for paired_info in paired_infos]
+    return first_img_infos, second_img_infos
+
+
+@sly.timeit
+def get_common_ann_infos(pair, first_img_infos, second_img_infos):
+    first_project_id = pair[0][3]
+    second_project_id = pair[1][3]
+    first_dataset_id = pair[0][5]
+    second_dataset_id = pair[1][5]
+    first_img_id_to_idx = {img.id: i for i, img in enumerate(first_img_infos)}
+    second_img_id_to_idx = {img.id: i for i, img in enumerate(second_img_infos)}
+    first_imgs_ids = set(img.id for img in first_img_infos)
+    second_imgs_ids = set(img.id for img in second_img_infos)
+    first_all_ann_infos = get_ann_infos(first_project_id, first_dataset_id)
+    second_all_ann_infos = get_ann_infos(second_project_id, second_dataset_id)
+    first_ann_infos = sorted(
+        [
+            ann_info
+            for ann_info in first_all_ann_infos
+            if ann_info.image_id in first_imgs_ids
+        ],
+        key=lambda x: first_img_infos[first_img_id_to_idx[x.image_id]].name,
+    )
+    second_ann_infos = sorted(
+        [
+            ann_info
+            for ann_info in second_all_ann_infos
+            if ann_info.image_id in second_imgs_ids
+        ],
+        key=lambda x: second_img_infos[second_img_id_to_idx[x.image_id]].name,
+    )
+    return first_ann_infos, second_ann_infos
+
+
+@sly.timeit
+def filter_labels_by_user(first_ann_infos, second_ann_infos, first_meta, second_meta, first_login, second_login):
+    for i, first_ann_info in enumerate(first_ann_infos):
+        ann = sly.Annotation.from_json(first_ann_info.annotation, first_meta)
+        filtered_labels = [
+            label
+            for label in ann.labels
+            if label.geometry.labeler_login == first_login
+        ]
+        ann = ann.clone(labels=filtered_labels)
+        first_ann_infos[i] = AnnotationInfo(
+            image_id=first_ann_info.image_id,
+            image_name=first_ann_info.image_name,
+            annotation=ann.to_json(),
+            created_at=first_ann_info.created_at,
+            updated_at=first_ann_info.updated_at,
+        )
+    for i, second_ann_info in enumerate(second_ann_infos):
+        ann = sly.Annotation.from_json(second_ann_info.annotation, second_meta)
+        filtered_labels = [
+            label
+            for label in ann.labels
+            if label.geometry.labeler_login == second_login
+        ]
+        ann = ann.clone(labels=filtered_labels)
+        second_ann_infos[i] = AnnotationInfo(
+            image_id=second_ann_info.image_id,
+            image_name=second_ann_info.image_name,
+            annotation=ann.to_json(),
+            created_at=second_ann_info.created_at,
+            updated_at=second_ann_info.updated_at,
+        ) 
+
+
+@sly.timeit
+def get_classes(ann_infos, meta):
+    class_counts = {}
+    for ann_info in ann_infos:
+        ann = sly.Annotation.from_json(ann_info.annotation, meta)
+        ann_class_counts = ann.stat_class_count(
+            [c.name for c in meta.obj_classes]
+        )
+        ann_class_counts.pop("total")
+        for class_name, count in ann_class_counts.items():
+            class_counts[class_name] = (
+                class_counts.get(class_name, 0) + count
+            )
+    return set(class_name for class_name, count in class_counts.items() if count > 0)
+
+
+@sly.timeit
+def get_class_matches(first_classes, second_classes):
+    return [{"class_gt": class_name, "class_pred": class_name} for class_name in first_classes.intersection(second_classes)]
+
+
+@sly.timeit
+def get_tags_whitelists(first_ann_infos, second_ann_infos, first_meta, second_meta):
+    first_tag_whitelist = set()
+    first_obj_tags_whitelist = set()
+    for ann_info in first_ann_infos:
+        ann = sly.Annotation.from_json(ann_info.annotation, first_meta)
+        for tag in ann.img_tags:
+            first_tag_whitelist.add(tag.name)
+        for tag in [t for label in ann.labels for t in label.tags]:
+            first_obj_tags_whitelist.add(tag.name)
+    second_tag_whitelist = set()
+    second_obj_tags_whitelist = set()
+    for ann_info in second_ann_infos:
+        ann = sly.Annotation.from_json(ann_info.annotation, second_meta)
+        for tag in ann.img_tags:
+            second_tag_whitelist.add(tag.name)
+        for tag in [t for label in ann.labels for t in label.tags]:
+            second_obj_tags_whitelist.add(tag.name)
+
+    tags_whitelist = list(
+        first_tag_whitelist.intersection(second_tag_whitelist)
+    )
+    obj_tags_whitelist = list(
+        first_obj_tags_whitelist.intersection(second_obj_tags_whitelist)
+    )
+    return tags_whitelist, obj_tags_whitelist
+
 
 @compare_btn.click
 def compare_btn_clicked():
-    rows = compare_table.get_json_data()["raw_rows_data"]
+    rows = [(i+1, *row) for i, row in enumerate(compare_table.get_json_data()["raw_rows_data"])]
     if len(rows) < 2:
         return
 
     global result_table
     global report_layout
     global pairs_comparisons_results
+    global report_pairs_progress
+    global report_calculation_progress
+    global repot_preparation_progress
+    global name_to_row
+
     report_layout.hide()
     result_table.loading = True
     rows_pairs = [
-        (rows[i], rows[j]) for i in range(len(rows)) for j in range(len(rows)) if i != j
+        (rows[i], rows[j]) for i in range(len(rows)) for j in range(i+1, len(rows))
     ]
-    pair_scores = []
-    for pair in rows_pairs:
-        if (row_to_str(pair[0]), row_to_str(pair[1])) not in pairs_comparisons_results:
-            first_project_id = pair[0][2]
-            second_project_id = pair[1][2]
-            first_dataset_id = pair[0][4]
-            second_dataset_id = pair[1][4]
-            first_img_infos = sorted(
-                get_img_infos(first_project_id, first_dataset_id), key=lambda x: x.name
-            )
-            second_img_infos = sorted(
-                get_img_infos(second_project_id, second_dataset_id),
-                key=lambda x: x.name,
-            )
+    name_to_row = {row_to_str(row): row for row in rows}
+    pair_scores = {}
+    report_pairs_progress.show()
+    repot_preparation_progress.show()
+    report_calculation_progress.show()
+    with report_pairs_progress(total=len(rows_pairs)*2, message="Pairs progress") as pairs_progress:
+        for i, pair in enumerate(rows_pairs):
+            pairs_progress.set_description(f"Pairs progress: {i+1}) {row_to_str(pair[0])} vs {row_to_str(pair[1])}")
+            preparation_progress = repot_preparation_progress(total=5, message="Preparing data for the report...")
+            if pair not in pairs_comparisons_results:
+                # 1. get common images
+                first_img_infos, second_img_infos = get_common_images(pair)
+                preparation_progress.update(1)
 
-            # 1. get common images
-            second_img_infos_dict = {img.name: img for img in second_img_infos}
-            paired_infos = []
-            for first_img in first_img_infos:
-                if first_img.name in second_img_infos_dict:
-                    paired_infos.append(
-                        (first_img, second_img_infos_dict[first_img.name])
-                    )
-            first_img_infos = [paired_info[0] for paired_info in paired_infos]
-            second_img_infos = [paired_info[1] for paired_info in paired_infos]
+                # 2. get common annotations
+                first_ann_infos, second_ann_infos = get_common_ann_infos(pair, first_img_infos, second_img_infos)
+                preparation_progress.update(1)
 
-            # 2. get common annotations
-            first_imgs_ids = set(paired_info[0].id for paired_info in paired_infos)
-            second_imgs_ids = set(paired_info[1].id for paired_info in paired_infos)
-            first_all_ann_infos = get_ann_infos(first_project_id, first_dataset_id)
-            second_all_ann_infos = get_ann_infos(second_project_id, second_dataset_id)
-            first_ann_infos = sorted(
-                [
-                    ann_info
-                    for ann_info in first_all_ann_infos
-                    if ann_info.image_id in first_imgs_ids
-                ],
-                key=lambda x: g.all_img_infos[x.image_id].name,
-            )
-            second_ann_infos = sorted(
-                [
-                    ann_info
-                    for ann_info in second_all_ann_infos
-                    if ann_info.image_id in second_imgs_ids
-                ],
-                key=lambda x: g.all_img_infos[x.image_id].name,
-            )
+                # 3. filter annotations labels by user
+                first_meta = g.project_metas[pair[0][3]]
+                second_meta = g.project_metas[pair[1][3]]
+                filter_labels_by_user(first_ann_infos, second_ann_infos, first_meta, second_meta, pair[0][6], pair[1][6])
+                preparation_progress.update(1)
 
-            # 3. filter annotations labels by user
-            first_meta = g.project_metas[pair[0][2]]
-            second_meta = g.project_metas[pair[1][2]]
-            for i, first_ann_info in enumerate(first_ann_infos):
-                ann = sly.Annotation.from_json(first_ann_info.annotation, first_meta)
-                filtered_labels = [
-                    label
-                    for label in ann.labels
-                    if label.geometry.labeler_login == pair[0][5]
-                ]
-                ann = ann.clone(labels=filtered_labels)
-                first_ann_infos[i] = AnnotationInfo(
-                    image_id=first_ann_info.image_id,
-                    image_name=first_ann_info.image_name,
-                    annotation=ann.to_json(),
-                    created_at=first_ann_info.created_at,
-                    updated_at=first_ann_info.updated_at,
+                # 4. get classes whitelist
+                first_classes = get_classes(first_ann_infos, first_meta)
+                second_classes = get_classes(second_ann_infos, second_meta)
+                class_matches = get_class_matches(first_classes, second_classes)
+                preparation_progress.update(1)
+
+                # 5. get tags whitelists
+                tags_whitelist, obj_tags_whitelist = get_tags_whitelists(first_ann_infos, second_ann_infos, first_meta, second_meta)
+                preparation_progress.update(1)
+                
+                
+                calculation_progress = report_calculation_progress(total=len(first_img_infos), message=f'Calculating consensus report for pair: "{row_to_str(pair[0])}" and "{row_to_str(pair[1])}"')
+                report, difference_geometries = calculate_exam_report(
+                    united_meta=g.project_metas[pair[0][3]],
+                    img_infos_gt=first_img_infos,
+                    img_infos_pred=second_img_infos,
+                    ann_infos_gt=first_ann_infos,
+                    ann_infos_pred=second_ann_infos,
+                    class_matches=class_matches,
+                    tags_whitelist=tags_whitelist,
+                    obj_tags_whitelist=obj_tags_whitelist,
+                    iou_threshold=0.5,
+                    progress=calculation_progress,
                 )
-            for i, second_ann_info in enumerate(second_ann_infos):
-                ann = sly.Annotation.from_json(second_ann_info.annotation, first_meta)
-                filtered_labels = [
-                    label
-                    for label in ann.labels
-                    if label.geometry.labeler_login == pair[1][5]
-                ]
-                ann = ann.clone(labels=filtered_labels)
-                second_ann_infos[i] = AnnotationInfo(
-                    image_id=second_ann_info.image_id,
-                    image_name=second_ann_info.image_name,
-                    annotation=ann.to_json(),
-                    created_at=second_ann_info.created_at,
-                    updated_at=second_ann_info.updated_at,
+                pairs_comparisons_results[
+                    (pair[0], pair[1])
+                ] = ComparisonResult(
+                    pair=pair,
+                    first_meta=first_meta,
+                    second_meta=second_meta,
+                    first_images=first_img_infos,
+                    second_images=second_img_infos,
+                    first_annotations_jsons=[ai.annotation for ai in first_ann_infos],
+                    second_annotations_jsons=[ai.annotation for ai in second_ann_infos],
+                    tags=list(set(tags_whitelist) | set(obj_tags_whitelist)),
+                    classes=[cm["class_gt"] for cm in class_matches],
+                    first_classes=list(first_classes),
+                    second_classes=list(second_classes),
+                    report=report,
+                    differences=difference_geometries,
                 )
+                report_calculation_progress.show()
+                score = get_score(report)
+                pair_scores[pair] = score
+                pairs_progress.update(1)
 
-            # 4. get classes whitelist
-            first_class_counts = {}
-            for ann_info in first_ann_infos:
-                ann = sly.Annotation.from_json(ann_info.annotation, first_meta)
-                class_counts = ann.stat_class_count(
-                    [c.name for c in first_meta.obj_classes]
+                calculation_progress = report_calculation_progress(total=len(first_img_infos), message=f'Calculating consensus report for pair: "{row_to_str(pair[1])}" and "{row_to_str(pair[0])}"')
+                report, difference_geometries = calculate_exam_report(
+                    united_meta=g.project_metas[pair[1][3]],
+                    img_infos_gt=second_img_infos,
+                    img_infos_pred=first_img_infos,
+                    ann_infos_gt=second_ann_infos,
+                    ann_infos_pred=first_ann_infos,
+                    class_matches=class_matches,
+                    tags_whitelist=tags_whitelist,
+                    obj_tags_whitelist=obj_tags_whitelist,
+                    iou_threshold=0.5,
+                    progress=calculation_progress,
                 )
-                class_counts.pop("total")
-                for class_name, count in class_counts.items():
-                    first_class_counts[class_name] = (
-                        first_class_counts.get(class_name, 0) + count
-                    )
-            second_class_counts = {}
-            for ann_info in second_ann_infos:
-                ann = sly.Annotation.from_json(ann_info.annotation, second_meta)
-                class_counts = ann.stat_class_count(
-                    [c.name for c in second_meta.obj_classes]
+                pairs_comparisons_results[
+                    (tuple(pair[::-1]))
+                ] = ComparisonResult(
+                    pair=tuple(pair[::-1]),
+                    first_meta=second_meta,
+                    second_meta=first_meta,
+                    first_images=second_img_infos,
+                    second_images=first_img_infos,
+                    first_annotations_jsons=[ai.annotation for ai in second_ann_infos],
+                    second_annotations_jsons=[ai.annotation for ai in first_ann_infos],
+                    tags=list(set(tags_whitelist) | set(obj_tags_whitelist)),
+                    classes=[cm["class_gt"] for cm in class_matches],
+                    first_classes=list(second_classes),
+                    second_classes=list(first_classes),
+                    report=report,
+                    differences=difference_geometries,
                 )
-                class_counts.pop("total")
-                for class_name, count in class_counts.items():
-                    second_class_counts[class_name] = (
-                        second_class_counts.get(class_name, 0) + count
-                    )
-            class_matches = []
-            for class_name, count in first_class_counts.items():
-                if class_name in second_class_counts:
-                    if count != 0 and second_class_counts[class_name] != 0:
-                        class_matches.append(
-                            {"class_gt": class_name, "class_pred": class_name}
-                        )
-
-            # 5. get tags whitelists
-            first_tag_whitelist = set()
-            first_obj_tags_whitelist = set()
-            for ann_info in first_ann_infos:
-                ann = sly.Annotation.from_json(ann_info.annotation, first_meta)
-                for tag in ann.img_tags:
-                    first_tag_whitelist.add(tag.name)
-                for tag in [t for label in ann.labels for t in label.tags]:
-                    first_obj_tags_whitelist.add(tag.name)
-            second_tag_whitelist = set()
-            second_obj_tags_whitelist = set()
-            for ann_info in second_ann_infos:
-                ann = sly.Annotation.from_json(ann_info.annotation, second_meta)
-                for tag in ann.img_tags:
-                    second_tag_whitelist.add(tag.name)
-                for tag in [t for label in ann.labels for t in label.tags]:
-                    second_obj_tags_whitelist.add(tag.name)
-
-            tags_whitelist = list(
-                first_tag_whitelist.intersection(second_tag_whitelist)
-            )
-            obj_tags_whitelist = list(
-                first_obj_tags_whitelist.intersection(second_obj_tags_whitelist)
-            )
-
-            report, difference_geometries = calculate_exam_report(
-                united_meta=g.project_metas[pair[0][2]],
-                img_infos_gt=first_img_infos,
-                img_infos_pred=second_img_infos,
-                ann_infos_gt=first_ann_infos,
-                ann_infos_pred=second_ann_infos,
-                class_matches=class_matches,
-                tags_whitelist=tags_whitelist,
-                obj_tags_whitelist=obj_tags_whitelist,
-                iou_threshold=0.5,
-            )
-
-            pairs_comparisons_results[
-                (row_to_str(pair[0]), row_to_str(pair[1]))
-            ] = ComparisonResult(
-                pair=pair,
-                first_meta=first_meta,
-                second_meta=second_meta,
-                first_images=first_img_infos,
-                second_images=second_img_infos,
-                first_annotations_jsons=[ai.annotation for ai in first_ann_infos],
-                second_annotations_jsons=[ai.annotation for ai in second_ann_infos],
-                tags=list(set(tags_whitelist) | set(obj_tags_whitelist)),
-                classes=[cm["class_gt"] for cm in class_matches],
-                first_classes=[class_name for class_name, count in first_class_counts.items() if count > 0],
-                second_classes=[class_name for class_name, count in second_class_counts.items() if count > 0],
-                report=report,
-                differences=difference_geometries,
-            )
-        else:
-            report = pairs_comparisons_results[
-                (row_to_str(pair[0]), row_to_str(pair[1]))
-            ].get_report()
-
-        score = get_score(report)
-        pair_scores.append(score)
+                report_calculation_progress.show()
+                score = get_score(report)
+                pair_scores[tuple(pair[::-1])] = score
+                pairs_progress.update(1)
+            else:
+                report = pairs_comparisons_results[
+                    pair
+                ].get_report()
+                score = get_score(report)
+                pair_scores[pair] = score
+                pairs_progress.update(1)
+                report = pairs_comparisons_results[
+                    tuple(pair[::-1])
+                ].get_report()
+                score = get_score(report)
+                pair_scores[tuple(pair[::-1])] = score
+                pairs_progress.update(1)
 
     result_table.read_json(
-        get_result_table_data_json(rows, rows, rows_pairs, pair_scores)
+        get_result_table_data_json([tuple(rows[i]) for i in range(len(rows))], [tuple(rows[i]) for i in range(len(rows))], pair_scores)
     )
+    report_pairs_progress.hide()
+    repot_preparation_progress.hide()
+    report_calculation_progress.hide()
     result_table.loading = False
     result_table.show()
     consensus_report_notification.show()
@@ -638,22 +767,31 @@ def compare_btn_clicked():
 
 @result_table.click
 def result_table_clicked(datapoint):
+    global name_to_row
     row_name = datapoint.row[""]
     column_name = datapoint.column_name
+    
     if column_name == "" or row_name == column_name:
         return
 
+    global consensus_report_error_notification
     global report_layout
     global pairs_comparisons_results
     global consensus_report_text
     global consensus_report_notification
     global consensus_report_details
+
+    pair = (name_to_row[row_name], name_to_row[column_name])
+    comparison_result = pairs_comparisons_results[pair]
+    comparison_result: ComparisonResult
+    if comparison_result.error_message is not None:
+        consensus_report_error_notification.show()
+        consensus_report_error_notification.set(title="Error", description=f'Error occured while calculating consensus report. Error Message: "{comparison_result.error_message}"')
+        return
+    consensus_report_error_notification.hide()
     report_layout.loading = True
     consensus_report_details.loading = True
     report_layout.show()
-    pair = (row_name, column_name)
-    comparison_result = pairs_comparisons_results[pair]
-    comparison_result: ComparisonResult
     render_report(
         report=comparison_result.get_report(),
         gt_imgs=comparison_result.first_images,
@@ -670,15 +808,15 @@ def result_table_clicked(datapoint):
     consensus_report_text.set("<h1>Consensus report</h1>", status="text")
     
     selected_pair_first.set(
-        project_name=comparison_result.pair[0][1],
-        dataset_name=comparison_result.pair[0][3],
-        user_login=comparison_result.pair[0][5],
+        project_name=comparison_result.pair[0][2],
+        dataset_name=comparison_result.pair[0][4],
+        user_login=comparison_result.pair[0][6],
         classes=[(cls.name, cls.color) for cls in comparison_result.first_meta.obj_classes if cls.name in comparison_result.first_classes]
     )
     selected_pair_second.set(
-        project_name=comparison_result.pair[1][1],
-        dataset_name=comparison_result.pair[1][3],
-        user_login=comparison_result.pair[1][5],
+        project_name=comparison_result.pair[1][2],
+        dataset_name=comparison_result.pair[1][4],
+        user_login=comparison_result.pair[1][6],
         classes=[(cls.name, cls.color) for cls in comparison_result.second_meta.obj_classes if cls.name in comparison_result.second_classes]
     )
     consensus_report_classes.set(text="".join(wrap_in_tag(cls.name, cls.color) for cls in comparison_result.first_meta.obj_classes if cls.name in comparison_result.classes), status="text")
@@ -737,10 +875,11 @@ layout = Container(
         Card(
             title="3️⃣ Compare Results",
             description="Click on 'CALCULATE CONSENSUS' button to see comparison matrix. Value in a table cell is a consensus score between two users",
-            content=result_table,
+            content=Container(widgets=[report_pairs_progress, repot_preparation_progress, report_calculation_progress, result_table]),
             content_top_right=compare_btn,
         ),
         consensus_report_notification,
+        consensus_report_error_notification,
         consensus_report_text,
         consensus_report_details,
         report_layout,

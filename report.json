@@ -1,0 +1,2162 @@
+[
+    {
+        "value": 2,
+        "metric_name": "matches-true-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 2,
+        "metric_name": "num-objects-gt",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 2,
+        "metric_name": "num-objects-pred",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "matches-true-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "lemon",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "num-objects-gt",
+        "class_gt": "lemon",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "num-objects-pred",
+        "class_gt": "lemon",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "lemon",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "lemon",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "lemon",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 3,
+        "metric_name": "matches-true-positive",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 3,
+        "metric_name": "num-objects-gt",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 3,
+        "metric_name": "num-objects-pred",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9972036082474227,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9513462831984673,
+        "metric_name": "iou",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.996575679475164,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "lemon",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9410923014913342,
+        "metric_name": "iou",
+        "class_gt": "lemon",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9462192923449007,
+        "metric_name": "iou",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9937792877225867,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-true-positive",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-false-positive",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-false-negative",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-total-gt",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-total-pred",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9731096461724503,
+        "metric_name": "overall-score",
+        "class_gt": "",
+        "image_gt_id": 20405480,
+        "image_pred_id": 20405480,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 2,
+        "metric_name": "matches-true-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 2,
+        "metric_name": "num-objects-gt",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 2,
+        "metric_name": "num-objects-pred",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "matches-true-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "lemon",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "num-objects-gt",
+        "class_gt": "lemon",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "num-objects-pred",
+        "class_gt": "lemon",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "lemon",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "lemon",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "lemon",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 3,
+        "metric_name": "matches-true-positive",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 3,
+        "metric_name": "num-objects-gt",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 3,
+        "metric_name": "num-objects-pred",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.998149015932521,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9516597827749732,
+        "metric_name": "iou",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9981982193064667,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "lemon",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9511140777470519,
+        "metric_name": "iou",
+        "class_gt": "lemon",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9513869302610125,
+        "metric_name": "iou",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9963472352389878,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-true-positive",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-false-positive",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-false-negative",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-total-gt",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-total-pred",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9756934651305063,
+        "metric_name": "overall-score",
+        "class_gt": "",
+        "image_gt_id": 20405476,
+        "image_pred_id": 20405476,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 6,
+        "metric_name": "matches-true-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 6,
+        "metric_name": "num-objects-gt",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 6,
+        "metric_name": "num-objects-pred",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "matches-true-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "lemon",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "num-objects-gt",
+        "class_gt": "lemon",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "num-objects-pred",
+        "class_gt": "lemon",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "lemon",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "lemon",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "lemon",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 7,
+        "metric_name": "matches-true-positive",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 7,
+        "metric_name": "num-objects-gt",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 7,
+        "metric_name": "num-objects-pred",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9952987347703842,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.957091227920106,
+        "metric_name": "iou",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9987043111527648,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "lemon",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9616238723108952,
+        "metric_name": "iou",
+        "class_gt": "lemon",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9593575501155006,
+        "metric_name": "iou",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.994003045923149,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-true-positive",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-false-positive",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-false-negative",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-total-gt",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-total-pred",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9796787750577503,
+        "metric_name": "overall-score",
+        "class_gt": "",
+        "image_gt_id": 20405479,
+        "image_pred_id": 20405479,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 3,
+        "metric_name": "matches-true-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 3,
+        "metric_name": "num-objects-gt",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 3,
+        "metric_name": "num-objects-pred",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "matches-true-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "lemon",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "num-objects-gt",
+        "class_gt": "lemon",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "num-objects-pred",
+        "class_gt": "lemon",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "lemon",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "lemon",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "lemon",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 4,
+        "metric_name": "matches-true-positive",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 4,
+        "metric_name": "num-objects-gt",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 4,
+        "metric_name": "num-objects-pred",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9957029053420806,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9532369514776001,
+        "metric_name": "iou",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9980002343017806,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "lemon",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9724045394290148,
+        "metric_name": "iou",
+        "class_gt": "lemon",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9628207454533075,
+        "metric_name": "iou",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9937031396438613,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-true-positive",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-false-positive",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-false-negative",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-total-gt",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-total-pred",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9814103727266538,
+        "metric_name": "overall-score",
+        "class_gt": "",
+        "image_gt_id": 20405478,
+        "image_pred_id": 20405478,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 4,
+        "metric_name": "matches-true-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 4,
+        "metric_name": "num-objects-gt",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 4,
+        "metric_name": "num-objects-pred",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "matches-true-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "lemon",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "num-objects-gt",
+        "class_gt": "lemon",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "num-objects-pred",
+        "class_gt": "lemon",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "lemon",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "lemon",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "lemon",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 5,
+        "metric_name": "matches-true-positive",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 5,
+        "metric_name": "num-objects-gt",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 5,
+        "metric_name": "num-objects-pred",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9974906279287723,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9646044021415824,
+        "metric_name": "iou",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9990124179943768,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "lemon",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9676528145504777,
+        "metric_name": "iou",
+        "class_gt": "lemon",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9661286083460301,
+        "metric_name": "iou",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.996503045923149,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-true-positive",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-false-positive",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-false-negative",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-total-gt",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-total-pred",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.983064304173015,
+        "metric_name": "overall-score",
+        "class_gt": "",
+        "image_gt_id": 20405477,
+        "image_pred_id": 20405477,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 3,
+        "metric_name": "matches-true-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 3,
+        "metric_name": "num-objects-gt",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 3,
+        "metric_name": "num-objects-pred",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "matches-true-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "lemon",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "num-objects-gt",
+        "class_gt": "lemon",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1,
+        "metric_name": "num-objects-pred",
+        "class_gt": "lemon",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "lemon",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "lemon",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "lemon",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 4,
+        "metric_name": "matches-true-positive",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 4,
+        "metric_name": "num-objects-gt",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 4,
+        "metric_name": "num-objects-pred",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9976686972820994,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9658720631109586,
+        "metric_name": "iou",
+        "class_gt": "kiwi",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9985883317713214,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "lemon",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9678057121483342,
+        "metric_name": "iou",
+        "class_gt": "lemon",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9668388876296464,
+        "metric_name": "iou",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9962570290534208,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-true-positive",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-false-positive",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-false-negative",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-total-gt",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "tags-total-pred",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9834194438148232,
+        "metric_name": "overall-score",
+        "class_gt": "",
+        "image_gt_id": 20405481,
+        "image_pred_id": 20405481,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 20,
+        "metric_name": "matches-true-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "kiwi",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "kiwi",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 20,
+        "metric_name": "num-objects-gt",
+        "class_gt": "kiwi",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 20,
+        "metric_name": "num-objects-pred",
+        "class_gt": "kiwi",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "kiwi",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "kiwi",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "kiwi",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 6,
+        "metric_name": "matches-true-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-positive",
+        "class_gt": "lemon",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0,
+        "metric_name": "matches-false-negative",
+        "class_gt": "lemon",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 6,
+        "metric_name": "num-objects-gt",
+        "class_gt": "lemon",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 6,
+        "metric_name": "num-objects-pred",
+        "class_gt": "lemon",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-recall",
+        "class_gt": "lemon",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-precision",
+        "class_gt": "lemon",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "lemon",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 1.0,
+        "metric_name": "matches-f1",
+        "class_gt": "",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.99691893158388,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "kiwi",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9576414501763597,
+        "metric_name": "iou",
+        "class_gt": "kiwi",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.998179865666979,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "lemon",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9603739016956502,
+        "metric_name": "iou",
+        "class_gt": "lemon",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9590076759360049,
+        "metric_name": "iou",
+        "class_gt": "",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9950987972508591,
+        "metric_name": "pixel-accuracy",
+        "class_gt": "",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    },
+    {
+        "value": 0.9795038379680024,
+        "metric_name": "overall-score",
+        "class_gt": "",
+        "image_gt_id": 0,
+        "image_pred_id": 0,
+        "image_dest_id": 0,
+        "tag_name": ""
+    }
+]

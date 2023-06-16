@@ -39,24 +39,10 @@ project_metas = {
     for project in all_projects.values()
 }
 
-all_img_infos = {}
-ds_img_ids = {}
-ann_infos = {}
-
 
 def get_ds_ann_infos(dataset_id) -> List[sly.api.annotation_api.AnnotationInfo]:
-    global ann_infos
-    if dataset_id not in ann_infos:
-        ann_infos[dataset_id] = api.annotation.get_list(dataset_id)
-    return ann_infos[dataset_id]
+    return api.annotation.get_list(dataset_id)
 
 
 def get_ds_img_infos(dataset_id) -> List[sly.ImageInfo]:
-    global ds_img_ids
-    global all_img_infos
-    if dataset_id not in ds_img_ids:
-        imgs = api.image.get_list(dataset_id)
-        for img in imgs:
-            all_img_infos[img.id] = img
-        ds_img_ids[dataset_id] = [img.id for img in imgs]
-    return [all_img_infos[img_id] for img_id in ds_img_ids[dataset_id]]
+    return api.image.get_list(dataset_id)

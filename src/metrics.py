@@ -1,5 +1,5 @@
 import traceback
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 import numpy as np
 
 import supervisely as sly
@@ -24,6 +24,7 @@ from supervisely.metric.common import (
 from supervisely.metric.iou_metric import IOU, INTERSECTION, UNION
 from supervisely.metric.matching import get_geometries_iou, match_indices_by_score
 from supervisely.project.project_meta import ProjectMeta
+from supervisely.app.widgets.sly_tqdm.sly_tqdm import CustomTqdm
 
 
 PIXEL_ACCURACY = "pixel-accuracy"
@@ -320,6 +321,7 @@ def _make_pixel_counters():
 
 def ComputeMetrics(
     request: ComputeMetricsReq,
+    progress: Optional[CustomTqdm] = None
 ) -> Tuple[ComputeMetricsResp, List[sly.Bitmap]]:
     response = ComputeMetricsResp()
     iou_threshold = get_iou_threshold(request)
@@ -330,7 +332,6 @@ def ComputeMetrics(
     ann_infos_gt = request.ann_infos_gt
     ann_infos_pred = request.ann_infos_pred
     difference_geometries = []
-
     try:
         if len(img_infos_gt) != len(img_infos_pred):
             raise MetricsException(
@@ -639,6 +640,9 @@ def ComputeMetrics(
                     difference_geometries_batch.append(Bitmap(image_canvas_errors))
                 else:
                     difference_geometries_batch.append(None)
+                
+                if progress is not None:
+                    progress.update(1)
 
             difference_geometries.extend(difference_geometries_batch)
 
@@ -699,16 +703,20 @@ def ComputeMetrics(
         response = ComputeMetricsResp()
         response.error_message = exc.message
         difference_geometries = []
+        if progress is not None:
+            progress.update(len(img_infos_gt))
     except Exception as exc:
         response = ComputeMetricsResp()
         response.error_message = "Unexpected exception: {}".format(
             traceback.format_exc()
         )
         difference_geometries = []
-
+        if progress is not None:
+            progress.update(len(img_infos_gt))
     return response, difference_geometries
 
 
+@sly.timeit
 def calculate_exam_report(
     united_meta,
     img_infos_gt,
@@ -719,6 +727,7 @@ def calculate_exam_report(
     tags_whitelist,
     obj_tags_whitelist,
     iou_threshold,
+    progress: Optional[CustomTqdm] = None,
 ) -> Tuple[List, List[Bitmap]]:
     class_matches = [
         ClassMatch(class_gt=cm["class_gt"], class_pred=cm["class_pred"])
@@ -735,5 +744,5 @@ def calculate_exam_report(
         obj_tags_whitelist=obj_tags_whitelist,
         iou_threshold=iou_threshold,
     )
-    result, diff_bitmaps = ComputeMetrics(request)
+    result, diff_bitmaps = ComputeMetrics(request, progress)
     return result.to_json(), diff_bitmaps
