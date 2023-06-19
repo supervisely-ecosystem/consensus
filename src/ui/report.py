@@ -79,20 +79,10 @@ def report_to_dict(report):
             d[metric["metric_name"]] = {}
         if metric["image_gt_id"] not in d[metric["metric_name"]]:
             d[metric["metric_name"]][metric["image_gt_id"]] = {
-                (metric["class_gt"], metric["tag_name"]): metric["value"],
-                "image_dest_id": metric["image_dest_id"]
+                "image_pred_id": metric["image_pred_id"]
             }
+        d[metric["metric_name"]][metric["image_gt_id"]][(metric["class_gt"], metric["tag_name"])] = metric["value"]
     return d
-
-
-# metrics = {
-#     metic_name: {
-#         image_gt_id: {
-#             (class_gt, tag_name): value,
-#             "image_dest_id": image_dest_id
-#         }
-#     }
-# }
 
 
 @report_per_image_table.click
@@ -260,14 +250,14 @@ def get_average_f_measure_per_tags(report):
 
 def get_report_per_image_row(report, image_name, image_id):
     metrics = {
-        "matches-f1": 1,
+        "matches-f1": 0.0,
         "matches-false-negative": 0,
         "matches-false-positive": 0,
-        "tags-f1": 1,
+        "tags-f1": 0.0,
         "tags-false-negative": 0,
         "tags-false-positive": 0,
-        "iou": 0,
-        "overall-score": 0,
+        "iou": 0.0,
+        "overall-score": 0.0,
     }
     for metric_name in metrics.keys():
         try:

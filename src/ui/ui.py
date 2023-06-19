@@ -589,6 +589,7 @@ def get_classes(ann_infos, meta):
 
 @sly.timeit
 def get_class_matches(first_classes, second_classes):
+    return {class_name: class_name for class_name in first_classes.intersection(second_classes)}
     return [{"class_gt": class_name, "class_pred": class_name} for class_name in first_classes.intersection(second_classes)]
 
 
@@ -682,7 +683,7 @@ def compare_btn_clicked():
                     img_infos_pred=second_img_infos,
                     ann_infos_gt=first_ann_infos,
                     ann_infos_pred=second_ann_infos,
-                    class_matches=class_matches,
+                    class_mapping=class_matches,
                     tags_whitelist=tags_whitelist,
                     obj_tags_whitelist=obj_tags_whitelist,
                     iou_threshold=threshold,
@@ -699,7 +700,7 @@ def compare_btn_clicked():
                     first_annotations_jsons=[ai.annotation for ai in first_ann_infos],
                     second_annotations_jsons=[ai.annotation for ai in second_ann_infos],
                     tags=list(set(tags_whitelist) | set(obj_tags_whitelist)),
-                    classes=[cm["class_gt"] for cm in class_matches],
+                    classes=list(class_matches.keys()),
                     first_classes=list(first_classes),
                     second_classes=list(second_classes),
                     report=report,
@@ -717,7 +718,7 @@ def compare_btn_clicked():
                     img_infos_pred=first_img_infos,
                     ann_infos_gt=second_ann_infos,
                     ann_infos_pred=first_ann_infos,
-                    class_matches=class_matches,
+                    class_mapping=class_matches,
                     tags_whitelist=tags_whitelist,
                     obj_tags_whitelist=obj_tags_whitelist,
                     iou_threshold=threshold,
@@ -734,7 +735,7 @@ def compare_btn_clicked():
                     first_annotations_jsons=[ai.annotation for ai in second_ann_infos],
                     second_annotations_jsons=[ai.annotation for ai in first_ann_infos],
                     tags=list(set(tags_whitelist) | set(obj_tags_whitelist)),
-                    classes=[cm["class_gt"] for cm in class_matches],
+                    classes=list(class_matches.keys()),
                     first_classes=list(second_classes),
                     second_classes=list(first_classes),
                     report=report,
@@ -770,6 +771,7 @@ def compare_btn_clicked():
 
 
 @result_table.click
+@sly.timeit
 def result_table_clicked(datapoint):
     global name_to_row
     row_name = datapoint.row[""]
