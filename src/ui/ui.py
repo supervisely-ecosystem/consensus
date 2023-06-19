@@ -193,7 +193,6 @@ select_dataset_to_compare_field = Field(
 )
 select_user_to_compare = Select(items=[Select.Item(None, "All users")])
 add_to_compare_btn = Button("add", icon="zmdi zmdi-plus", button_size="small")
-add_to_compare_btn.disable()
 compare_table = RadioTable(columns=COMPARE_TABLE_COLUMNS, rows=[])
 pop_row_btn = Button("remove", button_size="small")
 compare_btn = Button("calculate consensus")
@@ -860,6 +859,10 @@ if g.project_id:
             ),
         )
         select_dataset(g.dataset_id)
+else:
+    if len(select_project_to_compare_items) > 0:
+        select_project(select_project_to_compare_items[0].value)
+    select_dataset(select_dataset_to_compare.get_items()[0].value)
 
 
 layout = Container(
