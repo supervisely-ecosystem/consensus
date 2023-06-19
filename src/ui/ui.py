@@ -546,7 +546,12 @@ def filter_labels_by_user(first_ann_infos, second_ann_infos, first_meta, second_
             for label in ann.labels
             if label.geometry.labeler_login == first_login
         ]
-        ann = ann.clone(labels=filtered_labels)
+        filtered_tags = [
+            tag
+            for tag in ann.img_tags
+            if tag.labeler_login == first_login
+        ]
+        ann = ann.clone(labels=filtered_labels, img_tags=filtered_tags)
         first_ann_infos[i] = AnnotationInfo(
             image_id=first_ann_info.image_id,
             image_name=first_ann_info.image_name,
@@ -561,14 +566,19 @@ def filter_labels_by_user(first_ann_infos, second_ann_infos, first_meta, second_
             for label in ann.labels
             if label.geometry.labeler_login == second_login
         ]
-        ann = ann.clone(labels=filtered_labels)
+        filtered_tags = [
+            tag
+            for tag in ann.img_tags
+            if tag.labeler_login == second_login
+        ]
+        ann = ann.clone(labels=filtered_labels, img_tags=filtered_tags)
         second_ann_infos[i] = AnnotationInfo(
             image_id=second_ann_info.image_id,
             image_name=second_ann_info.image_name,
             annotation=ann.to_json(),
             created_at=second_ann_info.created_at,
             updated_at=second_ann_info.updated_at,
-        ) 
+        )
 
 
 @sly.timeit
