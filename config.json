@@ -4,7 +4,7 @@
     "description": "Compare annotations of multiple labelers",
     "entrypoint": "python -m uvicorn src.main:app --host 0.0.0.0 --port 8000",
     "headless": false,
-    "categories": [ 
+    "categories": [
         "images",
         "visualization",
         "exploration",
@@ -12,6 +12,12 @@
         "visualization stats"
     ],
     "context_menu": {
-        "target": ["images_project", "images_dataset", "ecosystem"]
-    }
+        "target": [
+            "images_project",
+            "images_dataset",
+            "ecosystem"
+        ]
+    },
+    "icon": "https://github.com/supervisely-ecosystem/consensus/assets/61844772/094271eb-ffdd-4c73-b306-bc81ae17f469",
+    "icon_cover": false
 }
