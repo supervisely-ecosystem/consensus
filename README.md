@@ -1,7 +1,7 @@
 <div align="center" markdown>
 <img src="https://github.com/supervisely-ecosystem/consensus/assets/61844772/8132fd69-23a8-4407-8316-48d21430717e"/> 
 
-# Consensus
+# Labeling Consensus
   
 <p align="center">
   <a href="#Overview">Overview</a> •
@@ -25,25 +25,25 @@ This application allows you to compare annotations made by different users and g
 
 **Step 1:** Run the application from the ecosystem.
 
-**Step 2:** Wait until the app is started.
+**Step 2:** Wait until the app starts.
 
-Once the app is started, new task appear in workspace tasks. Wait for the message `Application is started ...` and then press `Open` button.
+Once the app is started, a new task appear in workspace tasks. Wait for the message `Application is started ...` and then press `Open` button.
 
 **Step 3:** Open the app.
 
 **Step 4:** Select projects, datasets and annotators to compare.
 
-You can select multiple annotators and datasets. You can see added annotations in the table to the right. To remove the annotation from comparison, select it in the table and press the "Remove" button.
+You can select multiple annotators and datasets. You can see added annotations in the table to the right. To remove an annotation from comparison, select it in the table and press the `Remove` button.
 
 <p align="center"><img src="https://github.com/supervisely-ecosystem/consensus/assets/61844772/20b9def0-5f1b-4871-917d-bbcea5c9e40e" /></p>
 
 **Step 5:** Run the comparison.
 
-Press the "Calculate consensus" button to start the comparison. The comparison may take a long time, depending on the number of images and annotations. After the calculation is finished, you will see the results in the comparison matrix.
+Press the `Calculate consensus` button to start the comparison. The comparison may take a long time, depending on the number of images and annotations. After the calculation is finished, you will see the results in the comparison matrix.
 
 <p align="center"><img src="https://github.com/supervisely-ecosystem/consensus/assets/61844772/0020ad34-a1d6-4414-acb8-50af3caa6a71" /></p>
 
-**Step 6:** See detailed report.
+**Step 6:** View the detailed report.
 
 Click on a cell of the comparison matrix with a score to see a detailed report for the given pair of annotations.
 
