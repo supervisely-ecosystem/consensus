@@ -1,6 +1,6 @@
 {
     "version": "2.0.0",
-    "name": "Consensus",
+    "name": "Labeling Consensus",
     "description": "Compare annotations of multiple labelers",
     "entrypoint": "python -m uvicorn src.main:app --host 0.0.0.0 --port 8000",
     "headless": false,
@@ -9,7 +9,8 @@
         "visualization",
         "exploration",
         "statistics",
-        "visualization stats"
+        "visualization stats",
+        "collaboration"
     ],
     "context_menu": {
         "target": [
