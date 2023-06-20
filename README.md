@@ -1,3 +1,6 @@
+<div align="center" markdown>
+<img src="https://github.com/supervisely-ecosystem/consensus/assets/61844772/8132fd69-23a8-4407-8316-48d21430717e"/> 
+
 # Consensus
   
 <p align="center">
@@ -6,7 +9,11 @@
   <a href="#What-Report-metrics-mean">What Report metrics mean</a>
 </p>
 
+[![](https://img.shields.io/badge/supervisely-ecosystem-brightgreen)](https://ecosystem.supervise.ly/apps/supervisely-ecosystem/consensus)
 [![](https://img.shields.io/badge/slack-chat-green.svg?logo=slack)](https://supervise.ly/slack)
+![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/supervisely-ecosystem/consensus)
+[![views](https://app.supervise.ly/img/badges/views/supervisely-ecosystem/consensus.png)](https://supervise.ly)
+[![runs](https://app.supervise.ly/img/badges/runs/supervisely-ecosystem/consensus.png)](https://supervise.ly)
 
 </div>
 
