@@ -21,6 +21,29 @@
 
 This application allows you to compare annotations made by different users and generate a report with metrics.
 
+<div style="width: 33%; margin-left: 25px;">
+  <address style="margin: 0px; font-size: .85rem; gap: 0.35rem; display: flex;">
+    <img src="https://cdn.supervisely.com/img/max.b5f233d.jpg" style="height: 22px; border-radius: 50%;"></img>
+    <div>
+      <b>Max Kolomeychenko</b>
+      <span style="color: #9fabc6;">•</span>
+      <time>
+        Jun 30, 2023
+      </time>
+    <div>
+  </address>
+  <h4 style="margin: 0px"><a href="https://supervisely.com/blog/labeling-consensus">How to use labeling consensus to get accurate training data</a></h4>
+  <p style="margin: 0px">
+    Consensus with detailed reports allows you to monitor and prevent systematic inconsistencies during the labeling process
+  </p>
+</div>
+
+
+#### Here is the video tutorial that explains how you can easily use the labeling consensus tool in the Supervisely platform.
+
+
+<a href="https://youtu.be/a9psonpLPIw" target="_blank"><img src="https://github.com/supervisely-ecosystem/consensus/assets/61844772/8e0163af-a469-42c6-84e5-d34536b14eb5"/></a>
+
 # How To Run
 
 **Step 1:** Run the application from the ecosystem.
