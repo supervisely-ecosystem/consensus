@@ -28,7 +28,7 @@ Consensus with detailed reports allows you to monitor and prevent systematic inc
 #### Here is the video tutorial that explains how you can easily use the labeling consensus tool in the Supervisely platform.
 
 
-<a href="https://youtu.be/a9psonpLPIw" target="_blank"><img src="https://github.com/supervisely-ecosystem/consensus/assets/61844772/8e0163af-a469-42c6-84e5-d34536b14eb5"/></a>
+<a href="https://youtu.be/a9psonpLPIw" target="_blank"><img src="https://github.com/supervisely-ecosystem/consensus/assets/12828725/5d1c1350-dc74-4cd7-9274-466559ea9c3e"/></a>
 
 # How To Run
 
