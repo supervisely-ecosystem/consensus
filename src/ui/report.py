@@ -135,7 +135,7 @@ def show_images(datapoint):
     DataJson().send_changes()
 
 
-report_per_image_images = GridGallery(3)
+report_per_image_images = GridGallery(3, enable_zoom=True, sync_views=True, fill_rectangle=False)
 report_per_image = Card(
     title="REPORT PER IMAGE",
     description="Click on a row to see annotation differences",
