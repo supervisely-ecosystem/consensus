@@ -134,7 +134,7 @@ class ComputeMetricsResult:
         if self.error_message is not None:
             return {"error": self.error_message}
         return [image_metric.to_json() for image_metric in self.image_metrics]
-    
+
 
 def _make_counters():
     return {TRUE_POSITIVE: 0, FALSE_POSITIVE: 0, FALSE_NEGATIVE: 0}
@@ -288,7 +288,9 @@ def safe_get_geometries_iou(g1, g2):
         return get_geometries_iou(g1, g2)
 
 
-def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] = None) -> Tuple[ComputeMetricsResult, List[Bitmap]]:
+def compute_metrics(
+    request: ComputeMetricsReq, progress: Optional[CustomTqdm] = None
+) -> Tuple[ComputeMetricsResult, List[Bitmap]]:
     result = ComputeMetricsResult()
     iou_threshold = request.iou_threshold
     tags_whitelist = set(request.tags_whitelist)
@@ -299,7 +301,7 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
     ann_infos_gt = request.ann_infos_gt
     ann_infos_pred = request.ann_infos_pred
     class_mapping = request.class_mapping
-    difference_geometries = []    
+    difference_geometries = []
     try:
         if len(img_infos_gt) != len(img_infos_pred):
             raise MetricsException(
@@ -315,7 +317,8 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
             class_gt: _make_counters() for class_gt in class_mapping
         }
         class_pixel_counters = {
-            class_mapping[class_gt]: _make_pixel_counters() for class_gt in class_mapping
+            class_mapping[class_gt]: _make_pixel_counters()
+            for class_gt in class_mapping
         }
         tag_counters = {
             tag_name: _make_counters()
@@ -324,8 +327,6 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
         total_pixel_error = 0
         total_pixels = 0
 
-        
-            
         for (
             gt_image_info,
             pred_image_info,
@@ -339,7 +340,7 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
         ):
             ann_gt = sly.Annotation.from_json(gt_ann_info.annotation, meta)
             ann_pred = sly.Annotation.from_json(pred_ann_info.annotation, meta)
-    
+
             image_class_counters = {
                 class_gt: _make_counters() for class_gt in class_mapping
             }
@@ -364,8 +365,16 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
             )
             image_errors_canvas = np.zeros(ann_gt.img_size, dtype=np.bool)
 
-            gt_nonrect_labels = [label for label in ann_gt.labels if not isinstance(label.geometry, Rectangle)]
-            pred_nonrect_labels = [label for label in ann_pred.labels if not isinstance(label.geometry, Rectangle)]
+            gt_nonrect_labels = [
+                label
+                for label in ann_gt.labels
+                if not isinstance(label.geometry, Rectangle)
+            ]
+            pred_nonrect_labels = [
+                label
+                for label in ann_pred.labels
+                if not isinstance(label.geometry, Rectangle)
+            ]
             (
                 nonrect_effective_masks_gt,
                 nonrect_effective_canvas_gt,
@@ -383,19 +392,35 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
 
             nonrect_class_to_indices_gt = {}
             for idx, label in enumerate(gt_nonrect_labels):
-                nonrect_class_to_indices_gt.setdefault(label.obj_class.name, []).append(idx)
+                nonrect_class_to_indices_gt.setdefault(label.obj_class.name, []).append(
+                    idx
+                )
             nonrect_class_to_indices_pred = {}
             for idx, label in enumerate(pred_nonrect_labels):
-                nonrect_class_to_indices_pred.setdefault(label.obj_class.name, []).append(idx)
+                nonrect_class_to_indices_pred.setdefault(
+                    label.obj_class.name, []
+                ).append(idx)
 
-            gt_rectangles_labels = [label for label in ann_gt.labels if isinstance(label.geometry, Rectangle)]
-            pred_rectangles_labels = [label for label in ann_pred.labels if isinstance(label.geometry, Rectangle)]
+            gt_rectangles_labels = [
+                label
+                for label in ann_gt.labels
+                if isinstance(label.geometry, Rectangle)
+            ]
+            pred_rectangles_labels = [
+                label
+                for label in ann_pred.labels
+                if isinstance(label.geometry, Rectangle)
+            ]
             rect_class_to_indices_gt = {}
             for idx, label in enumerate(gt_rectangles_labels):
-                rect_class_to_indices_gt.setdefault(label.obj_class.name, []).append(idx)
+                rect_class_to_indices_gt.setdefault(label.obj_class.name, []).append(
+                    idx
+                )
             rect_class_to_indices_pred = {}
             for idx, label in enumerate(pred_rectangles_labels):
-                rect_class_to_indices_pred.setdefault(label.obj_class.name, []).append(idx)
+                rect_class_to_indices_pred.setdefault(label.obj_class.name, []).append(
+                    idx
+                )
 
             for gt_class, pred_class in class_mapping.items():
                 image_class_pixel_counters = image_pixel_counters[gt_class]
@@ -406,8 +431,14 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
                 rect_gt_class_indices = rect_class_to_indices_gt.get(gt_class, [])
                 rect_pred_class_indices = rect_class_to_indices_pred.get(pred_class, [])
                 rect_class_matched_indices = match_indices_by_score(
-                    [gt_rectangles_labels[idx].geometry for idx in rect_gt_class_indices],
-                    [pred_rectangles_labels[idx].geometry for idx in rect_pred_class_indices],
+                    [
+                        gt_rectangles_labels[idx].geometry
+                        for idx in rect_gt_class_indices
+                    ],
+                    [
+                        pred_rectangles_labels[idx].geometry
+                        for idx in rect_pred_class_indices
+                    ],
                     iou_threshold,
                     safe_get_geometries_iou,
                 )
@@ -428,7 +459,9 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
                     add_tag_counts(
                         image_tag_counters,
                         gt_rectangles_labels[rect_gt_class_indices[match.idx_1]].tags,
-                        pred_rectangles_labels[rect_pred_class_indices[match.idx_2]].tags,
+                        pred_rectangles_labels[
+                            rect_pred_class_indices[match.idx_2]
+                        ].tags,
                         obj_tags_whitelist,
                         tp_key=TRUE_POSITIVE,
                         fp_key=FALSE_POSITIVE,
@@ -448,7 +481,9 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
                     add_tag_counts(
                         image_tag_counters,
                         TagCollection(),
-                        pred_rectangles_labels[rect_pred_class_indices[fp_label_idx]].tags,
+                        pred_rectangles_labels[
+                            rect_pred_class_indices[fp_label_idx]
+                        ].tags,
                         obj_tags_whitelist,
                         tp_key=TRUE_POSITIVE,
                         fp_key=FALSE_POSITIVE,
@@ -460,7 +495,9 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
                     gt_match_rectangle_idx = rect_gt_class_indices[gt_match]
                     pred_match_rectangle_idx = rect_pred_class_indices[pred_match]
                     gt_rect = gt_rectangles_labels[gt_match_rectangle_idx].geometry
-                    pred_rect = pred_rectangles_labels[pred_match_rectangle_idx].geometry
+                    pred_rect = pred_rectangles_labels[
+                        pred_match_rectangle_idx
+                    ].geometry
                     gt_canvas = np.zeros(ann_gt.img_size, dtype=np.bool)
                     gt_rect.draw(gt_canvas, color=True)
                     pred_canvas = np.zeros(ann_gt.img_size, dtype=np.bool)
@@ -477,32 +514,41 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
                     image_class_pixel_counters[ERROR_PIXELS] += np.sum(
                         error_canvas
                     ).item()
-                    common_bbox_area = int(Rectangle.from_geometries_list([gt_rect, pred_rect]).area)
+                    common_bbox_area = int(
+                        Rectangle.from_geometries_list([gt_rect, pred_rect]).area
+                    )
                     image_class_pixel_counters[TOTAL_PIXELS] += common_bbox_area
 
                     # Add rectangles differences to image errors canvas
                     image_errors_canvas |= error_canvas
-                
+
                 # Add rectagles differences to image errors canvas for unmatched rectangles
                 for gt_idx in rect_class_matched_indices.unmatched_indices_1:
-                    gt_rect = gt_rectangles_labels[rect_gt_class_indices[gt_idx]].geometry
+                    gt_rect = gt_rectangles_labels[
+                        rect_gt_class_indices[gt_idx]
+                    ].geometry
                     gt_canvas = np.zeros(ann_gt.img_size, dtype=np.bool)
                     gt_rect.draw(gt_canvas, color=True)
                     image_errors_canvas |= gt_canvas
                 for pred_id in rect_class_matched_indices.unmatched_indices_2:
-                    pred_rect = pred_rectangles_labels[rect_pred_class_indices[pred_id]].geometry
+                    pred_rect = pred_rectangles_labels[
+                        rect_pred_class_indices[pred_id]
+                    ].geometry
                     pred_canvas = np.zeros(ann_gt.img_size, dtype=np.bool)
                     pred_rect.draw(pred_canvas, color=True)
                     image_errors_canvas |= pred_canvas
 
                 # Nonrectangles
                 nonrect_gt_class_indices = nonrect_class_to_indices_gt.get(gt_class, [])
-                nonrect_pred_class_indices = nonrect_class_to_indices_pred.get(pred_class, [])
+                nonrect_pred_class_indices = nonrect_class_to_indices_pred.get(
+                    pred_class, []
+                )
                 nonrect_class_masks_gt = [
                     nonrect_effective_masks_gt[idx] for idx in nonrect_gt_class_indices
                 ]
                 nonrect_class_masks_pred = [
-                    nonrect_effective_masks_pred[idx] for idx in nonrect_pred_class_indices
+                    nonrect_effective_masks_pred[idx]
+                    for idx in nonrect_pred_class_indices
                 ]
                 nonrect_class_matched_indices = match_indices_by_score(
                     nonrect_class_masks_gt,
@@ -510,7 +556,7 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
                     iou_threshold,
                     safe_get_geometries_iou,
                 )
-                
+
                 # Object matching counters
                 this_image_class_counters[TRUE_POSITIVE] += len(
                     nonrect_class_matched_indices.matches
@@ -526,7 +572,9 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
                     add_tag_counts(
                         image_tag_counters,
                         gt_nonrect_labels[nonrect_gt_class_indices[match.idx_1]].tags,
-                        pred_nonrect_labels[nonrect_pred_class_indices[match.idx_2]].tags,
+                        pred_nonrect_labels[
+                            nonrect_pred_class_indices[match.idx_2]
+                        ].tags,
                         obj_tags_whitelist,
                         tp_key=TRUE_POSITIVE,
                         fp_key=FALSE_POSITIVE,
@@ -548,7 +596,9 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
                     add_tag_counts(
                         image_tag_counters,
                         TagCollection(),
-                        pred_nonrect_labels[nonrect_pred_class_indices[fp_label_idx]].tags,
+                        pred_nonrect_labels[
+                            nonrect_pred_class_indices[fp_label_idx]
+                        ].tags,
                         obj_tags_whitelist,
                         tp_key=TRUE_POSITIVE,
                         fp_key=FALSE_POSITIVE,
@@ -561,7 +611,9 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
                 nonrect_class_canvas_pred = np.isin(
                     nonrect_effective_canvas_pred, nonrect_pred_class_indices
                 )
-                nonrect_class_canvas_err = nonrect_class_canvas_gt != nonrect_class_canvas_pred
+                nonrect_class_canvas_err = (
+                    nonrect_class_canvas_gt != nonrect_class_canvas_pred
+                )
 
                 # Pixel counters
                 image_class_pixel_counters[INTERSECTION] += np.sum(
@@ -573,8 +625,10 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
                 image_class_pixel_counters[ERROR_PIXELS] += np.sum(
                     nonrect_class_canvas_err
                 ).item()
-                image_class_pixel_counters[TOTAL_PIXELS] += nonrect_class_canvas_err.size
-                
+                image_class_pixel_counters[
+                    TOTAL_PIXELS
+                ] += nonrect_class_canvas_err.size
+
                 # Add nonrectangles differences to image errors canvas
                 image_errors_canvas |= nonrect_class_canvas_err
 
@@ -588,7 +642,7 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
                 _sum_update_counters(
                     image_class_overall_counters, this_image_class_counters
                 )
-                
+
             # Update tag counters
             for tag_name, this_tag_counters in image_tag_counters.items():
                 _sum_update_counters(tag_counters[tag_name], this_tag_counters)
@@ -684,12 +738,15 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
                     image_gt_id=gt_image_info.id,
                     image_pred_id=pred_image_info.id,
                 )
-            
-            difference_geometries.append(Bitmap(image_errors_canvas))
+
+            if np.any(image_errors_canvas):
+                difference_geometries.append(Bitmap(image_errors_canvas))
+            else:
+                difference_geometries.append(None)
 
             if progress is not None:
                 progress.update(1)
-        
+
         overall_score_components = {}
 
         # Overall metrics per class
@@ -712,9 +769,7 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
             for class_gt, image_class_pixel_counters in class_pixel_counters.items()
         }
         overall_score_components.update(
-            _maybe_add_average_metric(
-                result, per_class_accuracy_metrics.values(), IOU
-            )
+            _maybe_add_average_metric(result, per_class_accuracy_metrics.values(), IOU)
         )
         if total_pixels > 0:
             _fill_metric_value(
@@ -738,9 +793,7 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
 
         if len(overall_score_components) > 0:
             overall_score = np.mean(list(overall_score_components.values())).item()
-            _fill_metric_value(
-                result.add(MetricValue()), OVERALL_SCORE, overall_score
-            )
+            _fill_metric_value(result.add(MetricValue()), OVERALL_SCORE, overall_score)
 
     except MetricsException as exc:
         # Reset the result to make sure there is no incomplete data there
@@ -751,9 +804,7 @@ def compute_metrics(request: ComputeMetricsReq, progress: Optional[CustomTqdm] =
             progress.update(len(img_infos_gt))
     except Exception as exc:
         result = ComputeMetricsResult()
-        result.error_message = "Unexpected exception: {}".format(
-            traceback.format_exc()
-        )
+        result.error_message = "Unexpected exception: {}".format(traceback.format_exc())
         difference_geometries = []
         if progress is not None:
             progress.update(len(img_infos_gt))

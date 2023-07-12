@@ -81,7 +81,9 @@ def report_to_dict(report):
             d[metric["metric_name"]][metric["image_gt_id"]] = {
                 "image_pred_id": metric["image_pred_id"]
             }
-        d[metric["metric_name"]][metric["image_gt_id"]][(metric["class_gt"], metric["tag_name"])] = metric["value"]
+        d[metric["metric_name"]][metric["image_gt_id"]][
+            (metric["class_gt"], metric["tag_name"])
+        ] = metric["value"]
     return d
 
 
@@ -111,7 +113,12 @@ def show_images(datapoint):
     gt_img = gt_images[img_idx]
     gt_img: sly.ImageInfo
     try:
-        labels = [sly.Label(differences[img_idx], sly.ObjClass("difference", sly.Bitmap, (255, 0, 0)))]
+        labels = [
+            sly.Label(
+                differences[img_idx],
+                sly.ObjClass("difference", sly.Bitmap, (255, 0, 0)),
+            )
+        ]
     except:
         labels = []
     diff_ann = sly.Annotation(
@@ -135,7 +142,9 @@ def show_images(datapoint):
     DataJson().send_changes()
 
 
-report_per_image_images = GridGallery(3, enable_zoom=True, sync_views=True, fill_rectangle=False)
+report_per_image_images = GridGallery(
+    3, enable_zoom=True, sync_views=True, fill_rectangle=False
+)
 report_per_image = Card(
     title="REPORT PER IMAGE",
     description="Click on a row to see annotation differences",
@@ -162,7 +171,7 @@ layout = results
 
 def get_overall_score(report):
     try:
-        return report["overall-score"][0][("","")]
+        return report["overall-score"][0][("", "")]
     except KeyError:
         return 0
 
@@ -192,7 +201,7 @@ def get_obj_count_per_class_row(report, class_name):
 
 def get_average_f_measure_per_class(report):
     try:
-        return report["matches-f1"][0][("","")]
+        return report["matches-f1"][0][("", "")]
     except KeyError:
         return 1
 
@@ -208,12 +217,16 @@ def get_geometry_quality_row(report, class_name):
         except KeyError:
             pass
 
-    return [class_name, f'{round(metrics["pixel-accuracy"]*100, 2)}%', f'{round(metrics["iou"]*100, 2)}%']
+    return [
+        class_name,
+        f'{round(metrics["pixel-accuracy"]*100, 2)}%',
+        f'{round(metrics["iou"]*100, 2)}%',
+    ]
 
 
 def get_average_iou(report):
     try:
-        return report["iou"][0][("","")]
+        return report["iou"][0][("", "")]
     except KeyError:
         return 1
 
@@ -317,6 +330,7 @@ def clean_up():
     overall_score.set("-", status="text")
 
 
+@sly.timeit
 def render_report(
     report,
     gt_imgs,
