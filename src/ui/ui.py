@@ -1,6 +1,7 @@
 from ast import Tuple
 from collections import namedtuple
 import json
+from pathlib import Path
 from typing import Dict, List
 import supervisely as sly
 from supervisely.app.widgets import (
@@ -20,7 +21,6 @@ from supervisely.app.widgets import (
     InputNumber,
     Empty,
 )
-from supervisely.api.annotation_api import AnnotationInfo
 
 import src.globals as g
 import src.utils as utils
@@ -72,34 +72,42 @@ class ComparisonResult:
         report,
         differences,
     ):
+        first_name = ", ".join(str(p) for p in pair[0][2:])
+        second_name = ", ".join(str(p) for p in pair[1][2:])
+        self.DIR_PATH = f"{g.TEMP_DATA_PATH}/compare_results/{first_name}/{second_name}"
         self.pair = pair
         self.first_meta = first_meta
         self.second_meta = second_meta
         self.first_images = first_images
         self.second_images = second_images
         self._first_annotations_path = self.save_anns_jsons(
-            ", ".join(str(p) for p in pair[0][2:]), first_annotations_jsons
+            "anns_first", first_annotations_jsons
         )
         self._second_annotations_path = self.save_anns_jsons(
-            ", ".join(str(p) for p in pair[1][2:]), second_annotations_jsons
+            "anns_second", second_annotations_jsons
         )
         self.tags = tags
         self.classes = classes
         self.first_classes = first_classes
         self.second_classes = second_classes
-        self._report_path = self.save_report(pair, report)
-        self._differences_path = self.save_differences(pair, differences)
+        self._report_path = self.save_report(report)
+        self._differences_path = self.save_differences(differences)
         try:
             self.error_message = report["error"]
         except (KeyError, TypeError):
             self.error_message = None
+    
+    def mkdir(self):
+        path = Path(self.DIR_PATH)
+        if not path.exists():
+            path.mkdir(parents=True)
+        return path
 
     @sly.timeit
-    def save_differences(self, pair, difference_geometries: List[sly.Bitmap]):
-        first = ", ".join(str(p) for p in pair[0][2:])
-        second = ", ".join(str(p) for p in pair[1][2:])
-        path = f"/tmp/diffs_{first}{second}.json"
-        with open(path, "w") as f:
+    def save_differences(self, difference_geometries: List[sly.Bitmap]):
+        dir_path = self.mkdir()
+        filepath = dir_path.joinpath(f"diffs.json")
+        with open(filepath, "w") as f:
             json.dump(
                 [
                     None if geometry is None else geometry.to_json()
@@ -107,23 +115,23 @@ class ComparisonResult:
                 ],
                 f,
             )
-        return path
+        return filepath
 
     @sly.timeit
     def save_anns_jsons(self, filename, anns: List[Dict]):
-        path = f"/tmp/anns_{filename}.json"
-        with open(path, "w") as f:
+        dir_path = self.mkdir()
+        filepath = dir_path.joinpath(f"{filename}.json")
+        with open(filepath, "w") as f:
             json.dump(anns, f)
-        return path
+        return filepath
 
     @sly.timeit
-    def save_report(self, pair, report):
-        first = ", ".join(str(p) for p in pair[0][2:])
-        second = ", ".join(str(p) for p in pair[1][2:])
-        path = f"/tmp/report_{first}{second}.json"
-        with open(path, "w") as f:
+    def save_report(self, report):
+        dir_path = self.mkdir()
+        filepath = dir_path.joinpath(f"report.json")
+        with open(filepath, "w") as f:
             json.dump(report, f)
-        return path
+        return filepath
 
     def get_first_annotations(self):
         with open(self._first_annotations_path, "r") as f:
