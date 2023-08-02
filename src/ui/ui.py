@@ -19,7 +19,7 @@ from supervisely.app.widgets import (
     NotificationBox,
     Progress,
     InputNumber,
-    Empty,
+    Checkbox,
 )
 
 import src.globals as g
@@ -229,6 +229,7 @@ compare_table = RadioTable(columns=COMPARE_TABLE_COLUMNS, rows=[])
 pop_row_btn = Button("remove", button_size="small")
 compare_btn = Button("calculate consensus")
 threshold_input = InputNumber(value=0.5, min=0, max=1, controls=False)
+segmentation_mode_checkbox = Checkbox("Enable")
 report_progress_current_pair_first = Text()
 report_progress_current_pair_second = Text()
 report_progress_current_pair = Flexbox(
@@ -497,6 +498,7 @@ def compare_btn_clicked():
         (rows[i], rows[j]) for i in range(len(rows)) for j in range(i + 1, len(rows))
     ]
     threshold = threshold_input.get_value()
+    segmentation_mode = segmentation_mode_checkbox.is_checked()
     pair_scores = {}
 
     for first, second in rows_pairs:
@@ -577,6 +579,7 @@ def compare_btn_clicked():
                     obj_tags_whitelist=obj_tags_whitelist,
                     iou_threshold=threshold,
                     progress=pbar,
+                    segmentation_mode=segmentation_mode,
                 )
             with report_calculation_progress(
                 total=len(first_img_infos),
@@ -618,6 +621,7 @@ def compare_btn_clicked():
                     obj_tags_whitelist=obj_tags_whitelist,
                     iou_threshold=threshold,
                     progress=pbar,
+                    segmentation_mode=segmentation_mode,
                 )
             with report_calculation_progress(
                 total=len(first_img_infos),
@@ -793,24 +797,30 @@ layout = Container(
             overflow="wrap",
         ),
         Card(
-            title="3️⃣ Compare Results",
+            title="3️⃣ Parameters",
+            description="Select parameters for report calculation",
+            content=Container(widgets=[
+                Field(
+                    title="Segmentation mode",
+                    description='If enabled, geometries of type "Bitmap" and "Polygon" will be treated as segmentation. Label that was added later will overlap older labels.',
+                    content=segmentation_mode_checkbox,
+                ),
+                Field(
+                    title="IoU threshold",
+                    description="Is used to match objects. IoU - Intersection over Union.",
+                    content=threshold_input,
+                ),
+                compare_btn
+            ])
+        ),
+        Card(
+            title="4️⃣ Compare Results",
             description="Click on 'CALCULATE CONSENSUS' button to see comparison matrix. Value in a table cell is a consensus score between two users",
             content=Container(
                 widgets=[
                     report_progress_current_pair,
                     report_calculation_progress,
                     result_table,
-                ]
-            ),
-            content_top_right=Flexbox(
-                widgets=[
-                    Field(
-                        title="iou threshold",
-                        description="Is used to match objects",
-                        content=Empty(),
-                    ),
-                    threshold_input,
-                    compare_btn,
                 ]
             ),
         ),
