@@ -25,7 +25,7 @@ This application allows you to compare annotations made by different users and g
 Consensus with detailed reports allows you to monitor and prevent systematic inconsistencies during the labeling process
 
 
-#### Here is the video tutorial that explains how you can easily use the labeling consensus tool in the Supervisely platform.
+🔥🔥🔥 Here is the [video tutorial](https://youtu.be/a9psonpLPIw) and [blog post](https://supervisely.com/blog/labeling-consensus/) that explains how you can easily use the labeling consensus tool in the Supervisely platform.
 
 
 <a href="https://youtu.be/a9psonpLPIw" target="_blank"><img src="https://github.com/supervisely-ecosystem/consensus/assets/12828725/5d1c1350-dc74-4cd7-9274-466559ea9c3e"/></a>
