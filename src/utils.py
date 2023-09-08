@@ -40,11 +40,7 @@ def get_score(report: List[dict]):
         return "Error"
     for metric in report:
         if metric["metric_name"] == "overall-score":
-            if (
-                metric["class_gt"] == ""
-                and metric["tag_name"] == ""
-                and metric["image_gt_id"] == 0
-            ):
+            if metric["class_gt"] == "" and metric["tag_name"] == "" and metric["image_gt_id"] == 0:
                 return metric["value"]
     return 0
 
@@ -53,9 +49,7 @@ def get_score(report: List[dict]):
 def get_img_infos(project_id, dataset_id):
     global ds_img_infos
     if dataset_id == "-":
-        datasets_ids = [
-            ds.id for ds in g.all_datasets.values() if ds.project_id == project_id
-        ]
+        datasets_ids = [ds.id for ds in g.all_datasets.values() if ds.project_id == project_id]
     else:
         datasets_ids = [dataset_id]
     for ds_id in datasets_ids:
@@ -68,9 +62,7 @@ def get_img_infos(project_id, dataset_id):
 def get_ann_infos(project_id, dataset_id):
     global ds_ann_infos
     if dataset_id == "-":
-        datasets_ids = [
-            ds.id for ds in g.all_datasets.values() if ds.project_id == project_id
-        ]
+        datasets_ids = [ds.id for ds in g.all_datasets.values() if ds.project_id == project_id]
     else:
         datasets_ids = [dataset_id]
     for ds_id in datasets_ids:
@@ -122,9 +114,7 @@ def filter_labels_by_user(
         filtered_labels = [
             label for label in ann.labels if label.geometry.labeler_login == first_login
         ]
-        filtered_tags = [
-            tag for tag in ann.img_tags if tag.labeler_login == first_login
-        ]
+        filtered_tags = [tag for tag in ann.img_tags if tag.labeler_login == first_login]
         ann = ann.clone(labels=filtered_labels, img_tags=filtered_tags)
         first_ann_infos[i] = AnnotationInfo(
             image_id=first_ann_info.image_id,
@@ -136,13 +126,9 @@ def filter_labels_by_user(
     for i, second_ann_info in enumerate(second_ann_infos):
         ann = Annotation.from_json(second_ann_info.annotation, second_meta)
         filtered_labels = [
-            label
-            for label in ann.labels
-            if label.geometry.labeler_login == second_login
+            label for label in ann.labels if label.geometry.labeler_login == second_login
         ]
-        filtered_tags = [
-            tag for tag in ann.img_tags if tag.labeler_login == second_login
-        ]
+        filtered_tags = [tag for tag in ann.img_tags if tag.labeler_login == second_login]
         ann = ann.clone(labels=filtered_labels, img_tags=filtered_tags)
         second_ann_infos[i] = AnnotationInfo(
             image_id=second_ann_info.image_id,
@@ -167,10 +153,7 @@ def get_classes(ann_infos, meta):
 
 @timeit
 def get_class_matches(first_classes, second_classes):
-    return {
-        class_name: class_name
-        for class_name in first_classes.intersection(second_classes)
-    }
+    return {class_name: class_name for class_name in first_classes.intersection(second_classes)}
 
 
 @timeit
@@ -193,7 +176,37 @@ def get_tags_whitelists(first_ann_infos, second_ann_infos, first_meta, second_me
             second_obj_tags_whitelist.add(tag.name)
 
     tags_whitelist = list(first_tag_whitelist.intersection(second_tag_whitelist))
-    obj_tags_whitelist = list(
-        first_obj_tags_whitelist.intersection(second_obj_tags_whitelist)
-    )
+    obj_tags_whitelist = list(first_obj_tags_whitelist.intersection(second_obj_tags_whitelist))
     return tags_whitelist, obj_tags_whitelist
+
+
+def get_project_by_id(project_id):
+    if project_id not in g.data["projects"]:
+        g.data["projects"][project_id] = g.api.project.get_info_by_id(project_id)
+    return g.data["projects"][project_id]
+
+
+def get_project_by_name(workspace_id, project_name):
+    for project in g.data["projects"].values():
+        if project.name == project_name and project.workspace_id == workspace_id:
+            return project
+    project = g.api.project.get_info_by_name(workspace_id, project_name)
+    if project is not None:
+        g.data["projects"][project.id] = project
+    return project
+
+
+def get_dataset_by_id(dataset_id):
+    if dataset_id not in g.data["datasets"]:
+        g.data["datasets"][dataset_id] = g.api.dataset.get_info_by_id(dataset_id)
+    return g.data["datasets"][dataset_id]
+
+
+def get_dataset_by_name(project_id, dataset_name):
+    for dataset in g.data["datasets"]:
+        if dataset.name == dataset_name and dataset.project_id == project_id:
+            return dataset
+    dataset = g.api.dataset.get_info_by_name(project_id, dataset_name)
+    if dataset is not None:
+        g.data["datasets"][dataset.id] = dataset
+    return dataset

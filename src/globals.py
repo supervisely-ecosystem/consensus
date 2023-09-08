@@ -1,5 +1,4 @@
 import os
-from typing import List
 from dotenv import load_dotenv
 import supervisely as sly
 
@@ -46,3 +45,5 @@ project_metas = {
     project.id: sly.ProjectMeta.from_json(api.project.get_meta(project.id))
     for project in all_projects.values()
 }
+
+data = {"projects": {}, "datasets": {}}

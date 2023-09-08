@@ -1,8 +1,8 @@
-from ast import Tuple
+from typing import Dict, List, Tuple
 from collections import namedtuple
 import json
 from pathlib import Path
-from typing import Dict, List
+import traceback
 import supervisely as sly
 from supervisely.app.widgets import (
     Text,
@@ -20,11 +20,21 @@ from supervisely.app.widgets import (
     Progress,
     InputNumber,
     Checkbox,
+    OneOf,
+    SelectWorkspace,
+    Input,
+    SelectTagMeta,
+    InputTag,
+    Editor,
 )
 
 import src.globals as g
 import src.utils as utils
-from src.ui.report import render_report, layout as report_layout
+from src.ui.report import (
+    render_report,
+    layout as report_layout,
+    report_to_dict,
+)
 from src.metrics import calculate_exam_report
 
 
@@ -80,9 +90,7 @@ class ComparisonResult:
         self.second_meta = second_meta
         self.first_images = first_images
         self.second_images = second_images
-        self._first_annotations_path = self.save_anns_jsons(
-            "anns_first", first_annotations_jsons
-        )
+        self._first_annotations_path = self.save_anns_jsons("anns_first", first_annotations_jsons)
         self._second_annotations_path = self.save_anns_jsons(
             "anns_second", second_annotations_jsons
         )
@@ -96,7 +104,7 @@ class ComparisonResult:
             self.error_message = report["error"]
         except (KeyError, TypeError):
             self.error_message = None
-    
+
     def mkdir(self):
         path = Path(self.DIR_PATH)
         if not path.exists():
@@ -136,15 +144,13 @@ class ComparisonResult:
     def get_first_annotations(self):
         with open(self._first_annotations_path, "r") as f:
             return [
-                sly.Annotation.from_json(ann_json, self.first_meta)
-                for ann_json in json.load(f)
+                sly.Annotation.from_json(ann_json, self.first_meta) for ann_json in json.load(f)
             ]
 
     def get_second_annotations(self):
         with open(self._second_annotations_path, "r") as f:
             return [
-                sly.Annotation.from_json(ann_json, self.second_meta)
-                for ann_json in json.load(f)
+                sly.Annotation.from_json(ann_json, self.second_meta) for ann_json in json.load(f)
             ]
 
     def get_differences(self):
@@ -184,12 +190,7 @@ class SelectedUser:
         self._dataset_text.set(self._dataset_name, status="text")
         self._user_text.set(self._user_login, status="text")
         self._classes_text.set(
-            "".join(
-                [
-                    utils.wrap_in_tag(class_name, color)
-                    for class_name, color in self._classes
-                ]
-            ),
+            "".join([utils.wrap_in_tag(class_name, color) for class_name, color in self._classes]),
             status="text",
         )
 
@@ -216,13 +217,9 @@ select_project_to_compare_items = [
     Select.Item(project.id, project.name) for project in g.all_projects.values()
 ]
 select_project_to_compare = Select(items=select_project_to_compare_items)
-select_project_to_compare_field = Field(
-    title="Project", content=select_project_to_compare
-)
+select_project_to_compare_field = Field(title="Project", content=select_project_to_compare)
 select_dataset_to_compare = Select(items=[Select.Item(None, "Combine all datasets")])
-select_dataset_to_compare_field = Field(
-    title="Dataset", content=select_dataset_to_compare
-)
+select_dataset_to_compare_field = Field(title="Dataset", content=select_dataset_to_compare)
 select_user_to_compare = Select(items=[Select.Item(None, "All users")])
 add_to_compare_btn = Button("add", icon="zmdi zmdi-plus", button_size="small")
 compare_table = RadioTable(columns=COMPARE_TABLE_COLUMNS, rows=[])
@@ -256,12 +253,8 @@ consensus_report_details = Card(
     description="Report is calculated for classes that are present in both sets of annotations",
     content=Container(
         widgets=[
-            Flexbox(
-                widgets=[Text("<h3>First:</h3>"), selected_pair_first.layout], gap=42
-            ),
-            Flexbox(
-                widgets=[Text("<h3>Second:</h3>"), selected_pair_second.layout], gap=20
-            ),
+            Flexbox(widgets=[Text("<h3>First:</h3>"), selected_pair_first.layout], gap=42),
+            Flexbox(widgets=[Text("<h3>Second:</h3>"), selected_pair_second.layout], gap=20),
             Flexbox(
                 widgets=[Text("<b>Report Classes:</b>"), consensus_report_classes],
                 gap=15,
@@ -284,6 +277,116 @@ consensus_report_error_notification = NotificationBox(
 consensus_report_error_notification.hide()
 result_table.hide()
 report_layout.hide()
+actions_select_which_images = Select(
+    items=[Select.Item("below", "Below threshold"), Select.Item("above", "Above threshold")]
+)
+actions_select_threshold = InputNumber(value=50, min=0, max=100, controls=False)
+actions_select_metric = Select(
+    items=[
+        Select.Item("overall-score", "Overall Score"),
+        Select.Item("matches-f1", "Objects Score"),
+        Select.Item("tags-f1", "Tags Score"),
+        Select.Item("iou", "Geometry Score"),
+    ]
+)
+# actions_save_inputs_dst = DestinationProject(None, project_type=sly.ProjectType.IMAGES)
+actions_save_inputs_ws = SelectWorkspace(team_id=g.TEAM_ID)
+actions_save_inputs_pr_name = Input()
+actions_save_inputs_ds_name = Input()
+actions_save_inputs = Container(
+    widgets=[
+        Text("<p>Copy images to another project</p>"),
+        Field(title="Workspace", description="Select workspace", content=actions_save_inputs_ws),
+        Field(
+            title="Project Name",
+            description="Input project name. If project does not exist, new project will be created.",
+            content=actions_save_inputs_pr_name,
+        ),
+        Field(
+            title="Dataset Name",
+            description="Input dataset name",
+            content=actions_save_inputs_ds_name,
+        ),
+    ]
+)
+actions_tag_inputs_tag_meta = SelectTagMeta(project_meta=sly.ProjectMeta())
+actions_tag_inputs_tag_value = InputTag(tag_meta=sly.TagMeta("", value_type=sly.TagValueType.NONE))
+actions_tag_inputs = Container(
+    widgets=[
+        Text("<p>Add or remove tag from images</p>"),
+        Field(title="Select Tag", content=actions_tag_inputs_tag_meta),
+        Field(
+            title="Select Tag Value",
+            description="Disable tag to delete it",
+            content=actions_tag_inputs_tag_value,
+        ),
+    ]
+)
+actions_lj_inputs_name = Input()
+actions_lj_inputs_user_ids = Select(
+    items=[Select.Item(user.id, user.login) for user in g.all_users.values()],
+    multiple=True,
+    filterable=True,
+)
+actions_lj_inputs_readme = Editor(language_mode="plain_text")
+actions_lj_inputs_description = Editor(language_mode="plain_text")
+actions_lj_inputs_classes_to_label = Select(items=[], multiple=True, filterable=True)
+actions_lj_inputs_tags_to_label = Select(items=[], multiple=True, filterable=True)
+actions_labeling_job_inputs = Container(
+    widgets=[
+        Text("<p>Create labeling job for images</p>"),
+        Field(title="Name", content=actions_lj_inputs_name),
+        Field(
+            title="Users",
+            description="Select at least 1 user. Labeling job will be created for each user. If images are from different datasets, a labeling job will created for each dataset.",
+            content=actions_lj_inputs_user_ids,
+        ),
+        Field(title="Description", content=actions_lj_inputs_description),
+        Field(title="Readme", content=actions_lj_inputs_readme),
+        Field(title="Classes to label", content=actions_lj_inputs_classes_to_label),
+        Field(title="Tags to label", content=actions_lj_inputs_tags_to_label),
+    ]
+)
+actions_select_action = Select(
+    items=[
+        Select.Item("save", "Copy to project", actions_save_inputs),
+        Select.Item("assign_tag", "Assign Tag", actions_tag_inputs),
+        Select.Item("labeling_job", "Create Labeling Job", actions_labeling_job_inputs),
+    ]
+)
+actions_action_settings = OneOf(actions_select_action)
+actions_run_btn = Button("Run", icon="zmdi zmdi-play", button_size="small")
+actions_progress = Progress()
+actions_progress.hide()
+actions_total = Text(text="", status="success")
+actions_total.hide()
+actions_card = Card(
+    title="5️⃣ Actions",
+    description="Perform different actions with images",
+    content=Container(
+        widgets=[
+            Field(title="Action", content=actions_select_action),
+            actions_action_settings,
+            Text("<h3>Select images for action</h3>"),
+            Field(
+                title="Score Threshold in %",
+                description="Input threshold of metric score",
+                content=actions_select_threshold,
+            ),
+            Field(title="Score Metric", description="Choose metric", content=actions_select_metric),
+            Field(
+                title="Condition",
+                description="Select condition for images selection",
+                content=actions_select_which_images,
+            ),
+            actions_run_btn,
+            actions_progress,
+            actions_total,
+        ]
+    ),
+    collapsable=True,
+)
+actions_card.collapse()
 
 
 # global variables
@@ -291,13 +394,236 @@ pairs_comparisons_results = {}
 name_to_row = {}
 
 
+def get_save_settings():
+    ws_id = actions_save_inputs_ws.get_selected_id()
+    pr_name = actions_save_inputs_pr_name.get_value()
+    ds_name = actions_save_inputs_ds_name.get_value()
+    return ws_id, pr_name, ds_name
+
+
+def get_images_for_actions(metric, passmark, result):
+    global name_to_row
+    cell_data = result_table.get_selected_cell(sly.app.StateJson())
+    row_name = cell_data["row"][""]
+    column_name = cell_data["column_name"]
+    if column_name == "" or row_name == column_name:
+        return []
+    pair = (name_to_row[row_name], name_to_row[column_name])
+    comparison_result = pairs_comparisons_results[pair]
+    comparison_result: ComparisonResult
+    if comparison_result.error_message is not None:
+        return []
+    if len(comparison_result.first_images) != len(comparison_result.second_images):
+        return []
+    report = comparison_result.get_report()
+    report_dict = report_to_dict(report)
+    if result == "above":
+        comparator = lambda x: x >= passmark
+    else:
+        comparator = lambda x: x < passmark
+    res = []
+    for gt_img, pred_img, ann in zip(
+        comparison_result.first_images,
+        comparison_result.second_images,
+        comparison_result.get_second_annotations(),
+    ):
+        try:
+            metric_value = report_dict[metric][gt_img.id][("", "")]
+        except KeyError:
+            metric_value = 0
+        if comparator(metric_value):
+            res.append((gt_img, pred_img, ann))
+    return res
+
+
+def actions_save_func(
+    ws_id, pr_name, ds_name, img_infos: List[sly.ImageInfo], anns: List[sly.Annotation]
+):
+    if len(img_infos) != len(anns):
+        raise RuntimeError("Number of images and annotations is not equal")
+    pr_info = utils.get_project_by_name(ws_id, pr_name)
+    if pr_info is None:
+        pr_info = g.api.project.create(ws_id, pr_name, change_name_if_conflict=True)
+    ds_info = utils.get_dataset_by_name(pr_info.id, ds_name)
+    if ds_info is None:
+        ds_info = g.api.dataset.create(pr_info.id, ds_name, change_name_if_conflict=True)
+    src_ds_ids = set(img_info.dataset_id for img_info in img_infos)
+    src_datasets = set(utils.get_dataset_by_id(ds_id) for ds_id in src_ds_ids)
+    src_projects = set(utils.get_project_by_id(ds.project_id) for ds in src_datasets)
+    for src_pr in src_projects:
+        g.api.project.merge_metas(src_pr.id, pr_info.id)
+    new_img_infos = g.api.image.upload_ids(
+        dataset_id=ds_info.id,
+        names=[img_info.name for img_info in img_infos],
+        ids=[img_info.id for img_info in img_infos],
+        infos=img_infos,
+    )
+    g.api.annotation.upload_anns(img_ids=[img_info.id for img_info in img_infos], anns=anns)
+    return new_img_infos
+
+
+def get_tag_settings():
+    tag_meta = actions_tag_inputs_tag_meta.get_selected_item()
+    tag = actions_tag_inputs_tag_value.get_tag()
+    return tag_meta, tag
+
+
+def actions_assign_tag_func(
+    tag: sly.Tag, img_infos: List[sly.ImageInfo], anns: List[sly.Annotation]
+):
+    if len(img_infos) != len(anns):
+        raise RuntimeError("Number of images and annotations is not equal")
+    updated_anns = []
+    for ann in anns:
+        existing_tag = ann.img_tags.get(tag.name)
+        existing_tag: sly.Tag
+        if existing_tag is None:
+            if tag is not None:
+                ann = ann.add_tag(tag)
+        elif tag is None:
+            ann = ann.delete_tag(existing_tag)
+        elif existing_tag.value != tag.value:
+            ann = ann.delete_tag(existing_tag).add_tag(tag)
+        updated_anns.append(ann)
+    g.api.annotation.upload_anns([img_info.id for img_info in img_infos], updated_anns)
+    return img_infos, ann
+
+
+def get_lj_settings():
+    labeling_job_name = actions_lj_inputs_name.get_value()
+    if labeling_job_name is None or labeling_job_name.isspace():
+        raise RuntimeError("Labeling job name is empty")
+    user_ids = actions_lj_inputs_user_ids.get_value()
+    if not user_ids:
+        raise RuntimeError("No users selected")
+    readme = actions_lj_inputs_readme.get_value()
+    description = actions_lj_inputs_description.get_value()
+    classes_to_label = actions_lj_inputs_classes_to_label.get_value()
+    if not classes_to_label:
+        classes_to_label = []
+    tags_to_label = actions_lj_inputs_tags_to_label.get_value()
+    if not tags_to_label:
+        tags_to_label = []
+    return labeling_job_name, user_ids, readme, description, classes_to_label, tags_to_label
+
+
+def actions_lj_func(
+    labeling_job_name,
+    user_ids,
+    readme,
+    description,
+    classes_to_label,
+    tags_to_label,
+    img_infos: List[sly.ImageInfo],
+    progress: Progress,
+):
+    ds_ids = set()
+    ds_img_ids = {}
+    for img_info in img_infos:
+        ds_ids.add(img_info.dataset_id)
+        ds_img_ids.setdefault(img_info.dataset_id, []).append(img_info.id)
+    labeling_jobs = []
+    with progress(total=len(ds_ids) * len(user_ids), message="Creating labeling jobs...") as pbar:
+        for ds_id in ds_ids:
+            labeling_jobs.extend(
+                g.api.labeling_job.create(
+                    name=labeling_job_name,
+                    dataset_id=ds_id,
+                    user_ids=user_ids,
+                    readme=readme,
+                    description=description,
+                    classes_to_label=classes_to_label,
+                    tags_to_label=tags_to_label,
+                    images_ids=ds_img_ids[ds_id],
+                )
+            )
+            pbar.update(len(user_ids))
+    return labeling_jobs
+
+
+@actions_run_btn.click
+def actions_run():
+    try:
+        actions_total.hide()
+        metric = actions_select_metric.get_value()
+        passmark = actions_select_threshold.get_value() / 100
+        result = actions_select_which_images.get_value()
+        action = actions_select_action.get_value()
+        items = get_images_for_actions(metric, passmark, result)
+        if action == "save":
+            actions_progress.show()
+            ws_id, pr_name, ds_name = get_save_settings()
+            with actions_progress(
+                iterable=items, message=f'Saving images to project "{pr_name}"...'
+            ) as pbar:
+                for batch in sly.batched(items):
+                    pred_imgs = [pred_img for _, pred_img, _ in batch]
+                    anns = [ann for _, _, ann in batch]
+                    _ = actions_save_func(ws_id, pr_name, ds_name, pred_imgs, anns)
+                    pbar.update(len(batch))
+            actions_total.text = f'Saved {len(items)} images to project "{pr_name}"'
+            actions_total.show()
+        elif action == "assign_tag":
+            actions_progress.show()
+            tag_meta, tag = get_tag_settings()
+            action_name = (
+                f'Removing tag "{tag_meta.name}" from images...'
+                if tag is None
+                else f'Updating tag "{tag_meta.name}" in images...'
+            )
+            with actions_progress(iterable=items, message=action_name) as pbar:
+                for batch in sly.batched(items):
+                    pred_imgs = [pred_img for _, pred_img, _ in batch]
+                    anns = [ann for _, _, ann in batch]
+                    _, _ = actions_assign_tag_func(tag, pred_imgs, anns)
+                    pbar.update(len(batch))
+            action_name = "removed from" if tag is None else "assigned to"
+            actions_total.text = f"Tag {action_name} {len(items)} images"
+            actions_total.show()
+        elif action == "labeling_job":
+            (
+                labeling_job_name,
+                user_ids,
+                readme,
+                description,
+                classes_to_label,
+                tags_to_label,
+            ) = get_lj_settings()
+            created_labeling_jobgs = actions_lj_func(
+                labeling_job_name=labeling_job_name,
+                user_ids=user_ids,
+                readme=readme,
+                description=description,
+                classes_to_label=classes_to_label,
+                tags_to_label=tags_to_label,
+                img_infos=[img_info for img_info, _, _ in items],
+                progress=actions_progress,
+            )
+            actions_total.text = (
+                f"Created {len(created_labeling_jobgs)} labeling jobs for {len(user_ids)} users"
+            )
+            actions_total.show()
+        else:
+            raise RuntimeError("Unknown action")
+    except Exception:
+        sly.logger.error("Error occured while performing action", exc_info=traceback.format_exc())
+        sly.app.show_dialog("Error", "Error occured while performing action")
+    finally:
+        actions_progress.hide()
+
+
+@actions_tag_inputs_tag_meta.value_changed
+def tag_meta_changed(tag_meta):
+    if tag_meta is None:
+        return
+    actions_tag_inputs_tag_value.set_tag_meta(tag_meta)
+
+
 def row_to_str(row: Row):
     return f"{row.index}. {row.project_name}, {row.dataset_name}, {row.annotator_login}"
 
 
-def get_result_table_data_json(
-    first_rows: List[Row], second_rows: List[Row], pairs_scores: Dict
-):
+def get_result_table_data_json(first_rows: List[Row], second_rows: List[Row], pairs_scores: Dict):
     first_rows_indexes = {row: idx for idx, row in enumerate(first_rows)}
     second_rows_indexes = {row: idx for idx, row in enumerate(second_rows)}
     data = [
@@ -315,6 +641,27 @@ def get_result_table_data_json(
     return {"columns": ["", *[row_to_str(row) for row in first_rows]], "data": data}
 
 
+def set_actions(project_meta: sly.ProjectMeta):
+    actions_tag_inputs.loading = True
+    actions_tag_inputs_tag_meta.set_project_meta(project_meta)
+    obj_classes = list(project_meta.obj_classes)
+    if obj_classes:
+        actions_tag_inputs_tag_meta.set_name(obj_classes[0])
+    actions_tag_inputs.loading = False
+    actions_labeling_job_inputs.loading = True
+    actions_lj_inputs_classes_to_label.set(
+        items=[
+            Select.Item(obj_class.name, obj_class.name) for obj_class in project_meta.obj_classes
+        ]
+    )
+    actions_lj_inputs_classes_to_label.set_value([])
+    actions_lj_inputs_tags_to_label.set(
+        items=[Select.Item(tag_meta.name, tag_meta.name) for tag_meta in project_meta.tag_metas]
+    )
+    actions_lj_inputs_tags_to_label.set_value([])
+    actions_labeling_job_inputs.loading = False
+
+
 def select_project(project_id):
     global select_dataset_to_compare
     global select_user_to_compare
@@ -322,11 +669,7 @@ def select_project(project_id):
     select_dataset_to_compare.loading = True
     select_user_to_compare.loading = True
     add_to_compare_btn.disable()
-    datasets = [
-        dataset
-        for dataset in g.all_datasets.values()
-        if dataset.project_id == project_id
-    ]
+    datasets = [dataset for dataset in g.all_datasets.values() if dataset.project_id == project_id]
     select_dataset_to_compare.set(
         [
             Select.Item(None, "Combine all datasets"),
@@ -362,11 +705,7 @@ def select_dataset(dataset_id):
         annotators = set(
             annotator
             for annotator in utils.get_annotators(
-                [
-                    ds.id
-                    for ds in g.all_datasets.values()
-                    if ds.project_id == selected_project_id
-                ]
+                [ds.id for ds in g.all_datasets.values() if ds.project_id == selected_project_id]
             )
         )
     else:
@@ -434,9 +773,7 @@ def add_to_compare_btn_clicked():
     users_list = [user_login]
     if user_login is None:
         users_list = [
-            item.value
-            for item in select_user_to_compare.get_items()
-            if item.value is not None
+            item.value for item in select_user_to_compare.get_items() if item.value is not None
         ]
     if len(users_list) == 0:
         return
@@ -454,9 +791,7 @@ def add_to_compare_btn_clicked():
 def pop_row_btn_clicked():
     selected_row = compare_table.get_selected_row()
     data = compare_table.get_json_data()
-    data["raw_rows_data"] = [
-        row for row in data["raw_rows_data"] if row != selected_row
-    ]
+    data["raw_rows_data"] = [row for row in data["raw_rows_data"] if row != selected_row]
     compare_table.set_data(
         columns=compare_table.columns,
         rows=data["raw_rows_data"],
@@ -469,8 +804,7 @@ def compare_btn_clicked():
     global compare_table
 
     rows = [
-        Row(i + 1, *r[1:])
-        for i, r in enumerate(compare_table.get_json_data()["raw_rows_data"])
+        Row(i + 1, *r[1:]) for i, r in enumerate(compare_table.get_json_data()["raw_rows_data"])
     ]
     if len(rows) < 2:
         return
@@ -494,9 +828,7 @@ def compare_btn_clicked():
     utils.ds_img_infos = {}
     utils.ds_ann_infos = {}
 
-    rows_pairs = [
-        (rows[i], rows[j]) for i in range(len(rows)) for j in range(i + 1, len(rows))
-    ]
+    rows_pairs = [(rows[i], rows[j]) for i in range(len(rows)) for j in range(i + 1, len(rows))]
     threshold = threshold_input.get_value()
     segmentation_mode = segmentation_mode_checkbox.is_checked()
     pair_scores = {}
@@ -506,27 +838,18 @@ def compare_btn_clicked():
             report_progress_current_pair_first.text = row_to_str(first)
             report_progress_current_pair_second.text = row_to_str(second)
             with report_calculation_progress(
-                message="Preparing data for the report...",
-                total = 100
+                message="Preparing data for the report...", total=100
             ) as pbar:
                 # 0. get data
                 first_meta = g.project_metas[first.project_id]
                 second_meta = g.project_metas[second.project_id]
-                first_img_infos = utils.get_img_infos(
-                    first.project_id, first.dataset_id
-                )
+                first_img_infos = utils.get_img_infos(first.project_id, first.dataset_id)
                 pbar.update(10)
-                first_ann_infos = utils.get_ann_infos(
-                    first.project_id, first.dataset_id
-                )
+                first_ann_infos = utils.get_ann_infos(first.project_id, first.dataset_id)
                 pbar.update(10)
-                second_img_infos = utils.get_img_infos(
-                    second.project_id, second.dataset_id
-                )
+                second_img_infos = utils.get_img_infos(second.project_id, second.dataset_id)
                 pbar.update(10)
-                second_ann_infos = utils.get_ann_infos(
-                    second.project_id, second.dataset_id
-                )
+                second_ann_infos = utils.get_ann_infos(second.project_id, second.dataset_id)
                 pbar.update(10)
 
                 # 1. get common images
@@ -741,6 +1064,8 @@ def result_table_clicked(datapoint):
         second_name=column_name,
     )
 
+    set_actions(comparison_result.second_meta)
+
     consensus_report_text.show()
     consensus_report_details.show()
     consensus_report_details.loading = False
@@ -799,19 +1124,21 @@ layout = Container(
         Card(
             title="3️⃣ Parameters",
             description="Select parameters for report calculation",
-            content=Container(widgets=[
-                Field(
-                    title="Segmentation mode",
-                    description='If enabled, geometries of type "Bitmap" and "Polygon" will be treated as segmentation. Label that was added later will overlap older labels.',
-                    content=segmentation_mode_checkbox,
-                ),
-                Field(
-                    title="IoU threshold",
-                    description="Is used to match objects. IoU - Intersection over Union.",
-                    content=threshold_input,
-                ),
-                compare_btn
-            ])
+            content=Container(
+                widgets=[
+                    Field(
+                        title="Segmentation mode",
+                        description='If enabled, geometries of type "Bitmap" and "Polygon" will be treated as segmentation. Label that was added later will overlap older labels.',
+                        content=segmentation_mode_checkbox,
+                    ),
+                    Field(
+                        title="IoU threshold",
+                        description="Is used to match objects. IoU - Intersection over Union.",
+                        content=threshold_input,
+                    ),
+                    compare_btn,
+                ]
+            ),
         ),
         Card(
             title="4️⃣ Compare Results",
@@ -824,6 +1151,7 @@ layout = Container(
                 ]
             ),
         ),
+        actions_card,
         consensus_report_notification,
         consensus_report_error_notification,
         consensus_report_text,
