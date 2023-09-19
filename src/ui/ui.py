@@ -68,7 +68,7 @@ class ComparisonResult:
     @sly.timeit
     def __init__(
         self,
-        pair: Tuple(Row, Row),
+        pair: Tuple[Row, Row],
         first_meta: sly.ProjectMeta,
         second_meta: sly.ProjectMeta,
         first_images,
