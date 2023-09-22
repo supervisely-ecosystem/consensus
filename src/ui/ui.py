@@ -646,7 +646,7 @@ def set_actions(project_meta: sly.ProjectMeta):
     actions_tag_inputs_tag_meta.set_project_meta(project_meta)
     obj_classes = list(project_meta.obj_classes)
     if obj_classes:
-        actions_tag_inputs_tag_meta.set_name(obj_classes[0])
+        actions_tag_inputs_tag_meta.set_name(obj_classes[0].name)
     actions_tag_inputs.loading = False
     actions_labeling_job_inputs.loading = True
     actions_lj_inputs_classes_to_label.set(
