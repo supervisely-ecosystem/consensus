@@ -355,6 +355,7 @@ actions_select_action = Select(
     ]
 )
 actions_action_settings = OneOf(actions_select_action)
+actions_img_count = Text(text="Action will be performed on 0 images")
 actions_run_btn = Button("Run", icon="zmdi zmdi-play", button_size="small")
 actions_progress = Progress()
 actions_progress.hide()
@@ -379,6 +380,7 @@ actions_card = Card(
                 description="Select condition for images selection",
                 content=actions_select_which_images,
             ),
+            actions_img_count,
             actions_run_btn,
             actions_progress,
             actions_total,
@@ -399,6 +401,39 @@ def get_save_settings():
     pr_name = actions_save_inputs_pr_name.get_value()
     ds_name = actions_save_inputs_ds_name.get_value()
     return ws_id, pr_name, ds_name
+
+
+def count_images_for_actions(metric, passmark, result):
+    global name_to_row
+    cell_data = result_table.get_selected_cell(sly.app.StateJson())
+    if cell_data is None:
+        return 0
+    row_name = cell_data["row"][""]
+    column_name = cell_data["column_name"]
+    if column_name == "" or row_name == column_name:
+        return 0
+    pair = (name_to_row[row_name], name_to_row[column_name])
+    comparison_result = pairs_comparisons_results[pair]
+    comparison_result: ComparisonResult
+    if comparison_result.error_message is not None:
+        return 0
+    if len(comparison_result.first_images) != len(comparison_result.second_images):
+        return 0
+    report = comparison_result.get_report()
+    report_dict = report_to_dict(report)
+    if result == "above":
+        comparator = lambda x: x >= passmark
+    else:
+        comparator = lambda x: x < passmark
+    count = 0
+    for gt_img in comparison_result.first_images:
+        try:
+            metric_value = report_dict[metric][gt_img.id][("", "")]
+        except KeyError:
+            metric_value = 0
+        if comparator(metric_value):
+            count += 1
+    return count
 
 
 def get_images_for_actions(metric, passmark, result):
@@ -617,6 +652,19 @@ def tag_meta_changed(tag_meta):
     if tag_meta is None:
         return
     actions_tag_inputs_tag_value.set_tag_meta(tag_meta)
+
+
+def update_images_count(*args, **kwargs):
+    metric = actions_select_metric.get_value()
+    passmark = actions_select_threshold.get_value() / 100
+    result = actions_select_which_images.get_value()
+    img_count = count_images_for_actions(metric, passmark, result)
+    actions_img_count.text = f"Action will be performed on {img_count} images"
+
+
+actions_select_which_images.value_changed(update_images_count)
+actions_select_threshold.value_changed(update_images_count)
+actions_select_metric.value_changed(update_images_count)
 
 
 def row_to_str(row: Row):
@@ -1065,6 +1113,7 @@ def result_table_clicked(datapoint):
     )
 
     set_actions(comparison_result.second_meta)
+    update_images_count()
 
     consensus_report_text.show()
     consensus_report_details.show()
