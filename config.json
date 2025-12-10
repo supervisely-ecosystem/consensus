@@ -1,26 +1,27 @@
 {
-    "version": "2.0.0",
-    "name": "Labeling Consensus",
-    "description": "Compare annotations of multiple labelers",
-    "entrypoint": "python -m uvicorn src.main:app --host 0.0.0.0 --port 8000",
-    "headless": false,
-    "categories": [
-        "images",
-        "visualization",
-        "exploration",
-        "statistics",
-        "visualization stats",
-        "collaboration"
-    ],
-    "docker_image": "supervisely/collaboration:6.72.122",
-    "context_menu": {
-        "target": [
-            "images_project",
-            "images_dataset",
-            "ecosystem"
-        ]
-    },
-    "icon": "https://github.com/supervisely-ecosystem/consensus/assets/119248312/522a87ea-c081-4173-835a-b9029c424634",
-    "icon_cover": true,
-    "poster": "https://github.com/supervisely-ecosystem/consensus/assets/61844772/8132fd69-23a8-4407-8316-48d21430717e"
+  "version": "2.0.0",
+  "name": "Labeling Consensus",
+  "description": "Compare annotations of multiple labelers",
+  "entrypoint": "python -m uvicorn src.main:app --host 0.0.0.0 --port 8000",
+  "headless": false,
+  "categories": [
+    "images",
+    "visualization",
+    "exploration",
+    "statistics",
+    "visualization stats",
+    "collaboration"
+  ],
+  "docker_image": "supervisely/collaboration:6.73.483",
+  "context_menu": {
+    "target": [
+      "images_project",
+      "images_dataset",
+      "ecosystem"
+    ]
+  },
+  "icon": "https://github.com/supervisely-ecosystem/consensus/assets/119248312/522a87ea-c081-4173-835a-b9029c424634",
+  "icon_cover": true,
+  "poster": "https://github.com/supervisely-ecosystem/consensus/assets/61844772/8132fd69-23a8-4407-8316-48d21430717e",
+  "min_instance_version": "6.15.35"
 }
