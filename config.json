@@ -12,7 +12,7 @@
     "visualization stats",
     "collaboration"
   ],
-  "docker_image": "supervisely/collaboration:6.73.483",
+  "docker_image": "supervisely/collaboration:6.73.486",
   "context_menu": {
     "target": [
       "images_project",
