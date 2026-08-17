@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 from collections import namedtuple
 import json
 from pathlib import Path
@@ -112,17 +112,13 @@ class ComparisonResult:
         return path
 
     @sly.timeit
-    def save_differences(self, difference_geometries: List[sly.Bitmap]):
+    def save_differences(self, difference_geometries: List[Optional[Dict]]):
+        # difference_geometries entries are already-serialized Bitmap JSON (or
+        # None) coming out of metrics.compute_metrics(), not Bitmap instances.
         dir_path = self.mkdir()
         filepath = dir_path.joinpath(f"diffs.json")
         with open(filepath, "w") as f:
-            json.dump(
-                [
-                    None if geometry is None else geometry.to_json()
-                    for geometry in difference_geometries
-                ],
-                f,
-            )
+            json.dump(difference_geometries, f)
         return filepath
 
     @sly.timeit
