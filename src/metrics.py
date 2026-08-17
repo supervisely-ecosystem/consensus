@@ -1,5 +1,5 @@
 import traceback
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Dict
 import numpy as np
 import supervisely as sly
 from supervisely.app.widgets.sly_tqdm.sly_tqdm import CustomTqdm
@@ -301,7 +301,7 @@ def is_segmentation(label: Label, segmentation_mode: bool):
 
 def compute_metrics(
     request: ComputeMetricsReq, progress: Optional[CustomTqdm] = None
-) -> Tuple[ComputeMetricsResult, List[Bitmap]]:
+) -> Tuple[ComputeMetricsResult, List[Optional[Dict]]]:
     result = ComputeMetricsResult()
     iou_threshold = request.iou_threshold
     tags_whitelist = set(request.tags_whitelist)
@@ -765,7 +765,9 @@ def compute_metrics(
                 )
 
             if np.any(image_errors_canvas):
-                difference_geometries.append(Bitmap(image_errors_canvas))
+                # Serialize now (compressed PNG+zlib) instead of keeping every
+                # image's full-resolution canvas/Bitmap in memory for the whole run.
+                difference_geometries.append(Bitmap(image_errors_canvas).to_json())
             else:
                 difference_geometries.append(None)
 
@@ -849,7 +851,7 @@ def calculate_exam_report(
     iou_threshold: float,
     progress: Optional[CustomTqdm] = None,
     segmentation_mode: Optional[bool] = True,
-) -> Tuple[List, List[Bitmap]]:
+) -> Tuple[List, List[Optional[Dict]]]:
     request = ComputeMetricsReq(
         united_meta=united_meta,
         img_infos_gt=img_infos_gt,
@@ -862,5 +864,5 @@ def calculate_exam_report(
         iou_threshold=iou_threshold,
         segmentation_mode=segmentation_mode,
     )
-    result, diff_bitmaps = compute_metrics(request, progress)
-    return result.to_json(), diff_bitmaps
+    result, difference_jsons = compute_metrics(request, progress)
+    return result.to_json(), difference_jsons
