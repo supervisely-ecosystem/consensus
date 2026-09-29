@@ -12,7 +12,7 @@
     "visualization stats",
     "collaboration"
   ],
-  "docker_image": "supervisely/collaboration:6.73.486",
+  "docker_image": "supervisely/collaboration:6.74.34",
   "context_menu": {
     "target": [
       "images_project",
@@ -23,5 +23,5 @@
   "icon": "https://github.com/supervisely-ecosystem/consensus/assets/119248312/522a87ea-c081-4173-835a-b9029c424634",
   "icon_cover": true,
   "poster": "https://github.com/supervisely-ecosystem/consensus/assets/61844772/8132fd69-23a8-4407-8316-48d21430717e",
-  "min_instance_version": "6.15.35"
+  "min_instance_version": "6.17.22"
 }
